@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>دوائي</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -16,426 +16,444 @@
       --card-light: #EDE8DF;
       --accent: #C8FF00;
       --accent2: #FF6B35;
-      --text-muted: rgba(13,13,13,0.4);
+      --muted: rgba(13,13,13,0.4);
       --radius: 22px;
     }
 
-    html, body {
-      min-height: 100vh;
-      background: var(--paper);
-      color: var(--ink);
-      font-family: 'DM Sans', sans-serif;
-    }
+    html, body { min-height: 100vh; background: var(--paper); color: var(--ink); font-family: 'DM Sans', sans-serif; }
 
-    /* grain texture */
     body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
+      content: ''; position: fixed; inset: 0;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
+      pointer-events: none; z-index: 0;
     }
 
-    .page {
-      position: relative;
-      z-index: 1;
-      max-width: 440px;
-      margin: 0 auto;
-      padding: 2.5rem 1.25rem 4rem;
-      min-height: 100vh;
-    }
+    .screen { display: none; position: relative; z-index: 1; max-width: 440px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; min-height: 100vh; }
+    .screen.active { display: block; }
 
-    /* ─── Header ─── */
-    .header {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      margin-bottom: 2.5rem;
-    }
-    .header-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 38px;
-      font-weight: 800;
-      line-height: 0.95;
-      letter-spacing: -0.02em;
-    }
-    .header-date {
-      font-size: 12px;
-      color: var(--text-muted);
-      text-align: left;
-      line-height: 1.5;
-    }
-    .header-date strong {
-      display: block;
-      font-family: 'Syne', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--ink);
-    }
+    /* ════ SETUP ════ */
+    .setup-eyebrow { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem; }
+    .setup-heading { font-family: 'Syne', sans-serif; font-size: 40px; font-weight: 800; line-height: 0.95; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+    .setup-sub { font-size: 13px; color: var(--muted); margin-bottom: 2rem; line-height: 1.5; }
 
-    /* ─── Cards ─── */
-    .card {
-      border-radius: var(--radius);
-      padding: 1.75rem;
-      margin-bottom: 1rem;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.12s ease;
-      cursor: default;
-    }
-    .card:active { transform: scale(0.985); }
+    /* med row */
+    .med-rows { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
 
-    .card-dark {
+    .med-row {
       background: var(--card-dark);
+      border-radius: 18px;
+      padding: 1.25rem;
+      position: relative;
       color: #fff;
     }
-    .card-light {
+    .med-row:nth-child(even) {
       background: var(--card-light);
       color: var(--ink);
       border: 1.5px solid rgba(13,13,13,0.08);
     }
 
-    /* big number bg */
-    .card-bg-num {
-      position: absolute;
+    .med-row-label {
       font-family: 'Syne', sans-serif;
-      font-weight: 800;
-      font-size: 160px;
-      line-height: 1;
-      opacity: 0.04;
-      left: -10px;
-      bottom: -20px;
-      pointer-events: none;
-      user-select: none;
-    }
-    .card-dark .card-bg-num { color: #fff; }
-    .card-light .card-bg-num { color: #000; }
-
-    .card-tag {
-      font-family: 'Syne', sans-serif;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      margin-bottom: 0.4rem;
-      opacity: 0.45;
-    }
-    .card-name {
-      font-family: 'Syne', sans-serif;
-      font-size: 26px;
-      font-weight: 800;
-      margin-bottom: 1.25rem;
-      line-height: 1.1;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      opacity: 0.4; margin-bottom: 0.9rem;
+      display: flex; align-items: center; justify-content: space-between;
     }
 
-    /* dot track */
-    .dot-track {
-      display: flex;
-      gap: 3px;
-      flex-wrap: wrap;
-      margin-bottom: 1rem;
+    .remove-btn {
+      background: none; border: none; cursor: pointer;
+      font-size: 16px; opacity: 0.35;
+      line-height: 1; padding: 0;
+      transition: opacity 0.15s;
     }
-    .dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      transition: transform 0.2s, opacity 0.2s;
-    }
-    .card-dark .dot.done  { background: var(--accent); }
-    .card-dark .dot.empty { background: rgba(255,255,255,0.12); }
-    .card-dark .dot.today-dot { background: rgba(255,255,255,0.35); box-shadow: 0 0 0 2px var(--accent); }
+    .remove-btn:hover { opacity: 0.8; }
+    .med-row:nth-child(odd)  .remove-btn { color: #fff; }
+    .med-row:nth-child(even) .remove-btn { color: var(--ink); }
 
-    .card-light .dot.done  { background: var(--ink); }
-    .card-light .dot.empty { background: rgba(13,13,13,0.1); }
-    .card-light .dot.today-dot { background: rgba(13,13,13,0.2); box-shadow: 0 0 0 2px var(--ink); }
+    .med-row-fields { display: grid; grid-template-columns: 1fr 100px; gap: 8px; }
 
-    /* progress bar */
-    .prog-wrap {
-      height: 3px;
-      border-radius: 2px;
-      margin-bottom: 1.25rem;
-    }
-    .card-dark .prog-wrap  { background: rgba(255,255,255,0.1); }
-    .card-light .prog-wrap { background: rgba(13,13,13,0.1); }
-    .prog-fill {
-      height: 3px;
-      border-radius: 2px;
-      transition: width 0.6s cubic-bezier(.4,0,.2,1);
-    }
-    .card-dark .prog-fill  { background: var(--accent); }
-    .card-light .prog-fill { background: var(--ink); }
+    .field label { display: block; font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 4px; }
+    .med-row:nth-child(odd)  .field label { color: rgba(255,255,255,0.38); }
+    .med-row:nth-child(even) .field label { color: var(--muted); }
 
-    /* bottom row */
-    .card-bottom {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
+    .field input {
+      width: 100%; border-radius: 10px; border: none;
+      padding: 0.55rem 0.75rem;
+      font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
+      outline: none; transition: box-shadow 0.15s; -webkit-appearance: none;
     }
-    .days-left-num {
-      font-family: 'Syne', sans-serif;
-      font-size: 44px;
-      font-weight: 800;
-      line-height: 1;
-    }
-    .card-dark .days-left-num { color: var(--accent); }
-    .card-light .days-left-num { color: var(--ink); }
-    .days-left-label {
-      font-size: 11px;
-      opacity: 0.45;
-      margin-top: 3px;
-    }
+    .med-row:nth-child(odd)  .field input { background: rgba(255,255,255,0.09); color: #fff; }
+    .med-row:nth-child(odd)  .field input::placeholder { color: rgba(255,255,255,0.2); }
+    .med-row:nth-child(odd)  .field input:focus { box-shadow: 0 0 0 2px var(--accent); }
+    .med-row:nth-child(even) .field input { background: rgba(255,255,255,0.75); color: var(--ink); }
+    .med-row:nth-child(even) .field input::placeholder { color: rgba(13,13,13,0.22); }
+    .med-row:nth-child(even) .field input:focus { box-shadow: 0 0 0 2px var(--ink); }
 
-    /* take button */
+    /* add button */
+    .add-med-btn {
+      width: 100%; padding: 0.9rem;
+      background: none;
+      border: 1.5px dashed rgba(13,13,13,0.2);
+      border-radius: 18px;
+      font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+      color: var(--muted); cursor: pointer;
+      transition: all 0.15s; letter-spacing: 0.05em;
+    }
+    .add-med-btn:hover { border-color: rgba(13,13,13,0.4); color: var(--ink); }
+
+    .start-btn {
+      width: 100%; margin-top: 1.25rem; padding: 1.1rem;
+      border: none; border-radius: var(--radius);
+      background: var(--ink); color: var(--accent);
+      font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 800;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      cursor: pointer; transition: transform 0.12s, opacity 0.12s;
+    }
+    .start-btn:hover  { opacity: 0.85; }
+    .start-btn:active { transform: scale(0.98); }
+
+    .err-msg { text-align: center; font-size: 12px; color: var(--accent2); margin-top: 0.6rem; min-height: 18px; }
+
+    /* ════ HOME ════ */
+    .header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 2.5rem; }
+    .header-title { font-family: 'Syne', sans-serif; font-size: 38px; font-weight: 800; line-height: 0.95; letter-spacing: -0.02em; }
+    .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+    .header-date  { font-size: 12px; color: var(--muted); text-align: left; line-height: 1.5; }
+    .header-date strong { display: block; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--ink); }
+    .icon-btn {
+      background: var(--card-light); border: none; border-radius: 50%;
+      width: 36px; height: 36px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; transition: background 0.15s;
+    }
+    .icon-btn:hover { background: #ddd8cf; }
+
+    /* med cards */
+    .cards-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .card {
+      border-radius: var(--radius); padding: 1.75rem;
+      position: relative; overflow: hidden;
+      transition: transform 0.12s;
+    }
+    .card:active { transform: scale(0.985); }
+    .card.dark  { background: var(--card-dark); color: #fff; }
+    .card.light { background: var(--card-light); color: var(--ink); border: 1.5px solid rgba(13,13,13,0.08); }
+
+    .card-bg-num { position: absolute; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 150px; line-height: 1; opacity: 0.04; left: -8px; bottom: -18px; pointer-events: none; user-select: none; }
+    .card.dark .card-bg-num  { color: #fff; }
+    .card.light .card-bg-num { color: #000; }
+
+    .card-tag  { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.4; margin-bottom: 0.3rem; }
+    .card-name { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; line-height: 1.1; margin-bottom: 1.1rem; }
+    .card.dark .card-name  { color: #fff; }
+    .card.light .card-name { color: var(--ink); }
+
+    .dot-track { display: flex; gap: 3px; flex-wrap: wrap; margin-bottom: 0.9rem; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; }
+    .card.dark .dot.done       { background: var(--accent); }
+    .card.dark .dot.empty      { background: rgba(255,255,255,0.12); }
+    .card.dark .dot.today-dot  { background: rgba(255,255,255,0.3); box-shadow: 0 0 0 2px var(--accent); }
+    .card.light .dot.done      { background: var(--ink); }
+    .card.light .dot.empty     { background: rgba(13,13,13,0.1); }
+    .card.light .dot.today-dot { background: rgba(13,13,13,0.18); box-shadow: 0 0 0 2px var(--ink); }
+
+    .prog-wrap { height: 3px; border-radius: 2px; margin-bottom: 1.1rem; }
+    .card.dark .prog-wrap  { background: rgba(255,255,255,0.1); }
+    .card.light .prog-wrap { background: rgba(13,13,13,0.1); }
+    .prog-fill { height: 3px; border-radius: 2px; transition: width 0.6s cubic-bezier(.4,0,.2,1); }
+    .card.dark .prog-fill  { background: var(--accent); }
+    .card.light .prog-fill { background: var(--ink); }
+
+    .card-bottom { display: flex; align-items: flex-end; justify-content: space-between; }
+    .days-num    { font-family: 'Syne', sans-serif; font-size: 42px; font-weight: 800; line-height: 1; }
+    .card.dark .days-num  { color: var(--accent); }
+    .card.light .days-num { color: var(--ink); }
+    .days-label { font-size: 11px; opacity: 0.4; margin-top: 3px; }
+
     .take-btn {
-      border: none;
-      border-radius: 50px;
-      padding: 0.55rem 1.2rem;
-      font-family: 'Syne', sans-serif;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      white-space: nowrap;
+      border: none; border-radius: 50px; padding: 0.55rem 1.2rem;
+      font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      cursor: pointer; transition: all 0.15s; white-space: nowrap;
     }
     .take-btn:active { transform: scale(0.95); }
+    .card.dark .take-btn        { background: var(--accent); color: #000; }
+    .card.dark .take-btn.taken  { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.35); cursor: default; }
+    .card.light .take-btn       { background: var(--ink); color: #fff; }
+    .card.light .take-btn.taken { background: rgba(13,13,13,0.1); color: rgba(13,13,13,0.3); cursor: default; }
 
-    .card-dark .take-btn          { background: var(--accent); color: #000; }
-    .card-dark .take-btn.taken    { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); cursor: default; }
-
-    .card-light .take-btn         { background: var(--ink); color: #fff; }
-    .card-light .take-btn.taken   { background: rgba(13,13,13,0.1); color: rgba(13,13,13,0.35); cursor: default; }
-
-    /* ─── Streak ─── */
+    /* streak */
     .streak-box {
-      margin-top: 1.25rem;
-      border-radius: var(--radius);
-      border: 1.5px solid rgba(13,13,13,0.08);
-      padding: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 1.25rem;
+      margin-top: 1rem; border-radius: var(--radius);
+      border: 1.5px solid rgba(13,13,13,0.08); padding: 1.5rem;
+      display: flex; align-items: center; gap: 1.25rem;
       background: rgba(255,255,255,0.5);
     }
-    .streak-circle {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      background: var(--ink);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .streak-circle-num {
-      font-family: 'Syne', sans-serif;
-      font-size: 22px;
-      font-weight: 800;
-      color: var(--accent);
-    }
-    .streak-text-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 3px;
-    }
-    .streak-text-sub {
-      font-size: 12px;
-      color: var(--text-muted);
-      line-height: 1.4;
-    }
+    .streak-circle { width: 60px; height: 60px; border-radius: 50%; background: var(--ink); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .streak-num   { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--accent); }
+    .streak-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+    .streak-sub   { font-size: 12px; color: var(--muted); line-height: 1.4; }
 
-    /* ─── Reset ─── */
     .reset-link {
-      display: block;
-      text-align: center;
-      margin-top: 2rem;
-      font-size: 11px;
-      color: var(--text-muted);
-      cursor: pointer;
-      letter-spacing: 0.05em;
-      text-decoration: none;
-      transition: color 0.15s;
+      display: block; text-align: center; margin-top: 2rem;
+      font-size: 11px; color: var(--muted); cursor: pointer;
+      letter-spacing: 0.05em; text-decoration: none; transition: color 0.15s;
     }
     .reset-link:hover { color: var(--accent2); }
 
-    /* ─── Taken animation ─── */
-    @keyframes pop {
-      0%   { transform: scale(1); }
-      40%  { transform: scale(1.06); }
-      100% { transform: scale(1); }
-    }
+    @keyframes pop { 0%{transform:scale(1)} 40%{transform:scale(1.06)} 100%{transform:scale(1)} }
     .pop { animation: pop 0.25s ease; }
   </style>
 </head>
 <body>
-<div class="page">
 
-  <div class="header">
-    <div class="header-title">دوائي<br/>اليوم</div>
-    <div class="header-date" id="dateDisplay"></div>
-  </div>
+<!-- ══ SETUP ══ -->
+<div class="screen active" id="screenSetup">
+  <div class="setup-eyebrow">خطوة واحدة</div>
+  <div class="setup-heading">أضف<br/>أدويتك</div>
+  <p class="setup-sub">سجّل كل دواء مرة واحدة،<br/>وبعدها كل يوم بضغطة.</p>
 
-  <!-- Card A: 90 days -->
-  <div class="card card-dark" id="cardA">
-    <div class="card-bg-num">90</div>
-    <div class="card-tag">دواء الأول</div>
-    <div class="card-name" id="nameA">الدواء الأول</div>
-    <div class="dot-track" id="dotsA"></div>
-    <div class="prog-wrap"><div class="prog-fill" id="progA" style="width:0%"></div></div>
-    <div class="card-bottom">
-      <div>
-        <div class="days-left-num" id="remA">90</div>
-        <div class="days-left-label">يوم متبقي</div>
-      </div>
-      <button class="take-btn" id="btnA" onclick="take('A')">أخذته ✓</button>
-    </div>
-  </div>
+  <div class="med-rows" id="medRows"></div>
 
-  <!-- Card B: 30 days -->
-  <div class="card card-light" id="cardB">
-    <div class="card-bg-num">30</div>
-    <div class="card-tag">الدواء الثاني</div>
-    <div class="card-name" id="nameB">الدواء الثاني</div>
-    <div class="dot-track" id="dotsB"></div>
-    <div class="prog-wrap"><div class="prog-fill" id="progB" style="width:0%"></div></div>
-    <div class="card-bottom">
-      <div>
-        <div class="days-left-num" id="remB">30</div>
-        <div class="days-left-label">يوم متبقي</div>
-      </div>
-      <button class="take-btn" id="btnB" onclick="take('B')">أخذته ✓</button>
-    </div>
-  </div>
+  <button class="add-med-btn" onclick="addMedRow()">+ أضف دواء</button>
 
-  <!-- Streak -->
-  <div class="streak-box">
-    <div class="streak-circle">
-      <span class="streak-circle-num" id="streakNum">0</span>
-    </div>
-    <div>
-      <div class="streak-text-title">أيام متواصلة</div>
-      <div class="streak-text-sub">كل ما زادت الأيام،<br/>كلما تحسّن التزامك</div>
-    </div>
-  </div>
-
-  <a class="reset-link" onclick="resetAll()">↺ إعادة ضبط كل شيء</a>
-
+  <button class="start-btn" onclick="startApp()">ابدأ التتبع ←</button>
+  <div class="err-msg" id="errMsg"></div>
 </div>
 
+
+<!-- ══ HOME ══ -->
+<div class="screen" id="screenHome">
+  <div class="header">
+    <div class="header-title">دوائي<br/>اليوم</div>
+    <div class="header-right">
+      <button class="icon-btn" onclick="goSetup()" title="الإعدادات">⚙</button>
+      <div class="header-date" id="dateDisplay"></div>
+    </div>
+  </div>
+
+  <div class="cards-list" id="cardsList"></div>
+
+  <div class="streak-box">
+    <div class="streak-circle"><span class="streak-num" id="streakNum">0</span></div>
+    <div>
+      <div class="streak-title">أيام متواصلة</div>
+      <div class="streak-sub">كل ما زادت الأيام،<br/>كلما تحسّن التزامك</div>
+    </div>
+  </div>
+
+  <a class="reset-link" onclick="resetAll()">↺ إعادة البداية من الصفر</a>
+</div>
+
+
 <script>
-  const TOTAL = { A: 90, B: 30 };
-  const STORE_KEY = 'dawai_v2';
+  const KEY = 'dawai_v5';
 
   function load() {
-    try { return JSON.parse(localStorage.getItem(STORE_KEY)) || { daysA:{}, daysB:{}, nameA:'الدواء الأول', nameB:'الدواء الثاني' }; }
-    catch(e) { return { daysA:{}, daysB:{}, nameA:'الدواء الأول', nameB:'الدواء الثاني' }; }
+    try { return JSON.parse(localStorage.getItem(KEY)) || null; }
+    catch(e) { return null; }
   }
-  function save(d) { try { localStorage.setItem(STORE_KEY, JSON.stringify(d)); } catch(e){} }
+  function save(d) { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch(e){} }
   function todayKey() { return new Date().toISOString().slice(0,10); }
 
-  function buildDots(containerId, days, total, cardType) {
-    const c = document.getElementById(containerId);
-    c.innerHTML = '';
-    const show = Math.min(total, 35);
-    const takenKeys = Object.keys(days).sort();
-    const takenCount = takenKeys.length;
-    for (let i = 0; i < show; i++) {
-      const d = document.createElement('div');
-      if (i < takenCount) {
-        d.className = 'dot done';
-      } else if (i === takenCount) {
-        d.className = 'dot today-dot';
-      } else {
-        d.className = 'dot empty';
-      }
-      c.appendChild(d);
+  /* ── init ── */
+  function init() {
+    const data = load();
+    if (data && data.meds && data.meds.length > 0) {
+      showHome();
+    } else {
+      showSetup();
     }
   }
 
+  /* ── screens ── */
+  function showSetup() {
+    document.getElementById('screenHome').classList.remove('active');
+    document.getElementById('screenSetup').classList.add('active');
+    window.scrollTo(0,0);
+  }
+  function showHome() {
+    document.getElementById('screenSetup').classList.remove('active');
+    document.getElementById('screenHome').classList.add('active');
+    setDate(); render();
+    window.scrollTo(0,0);
+  }
+
+  /* ── setup: build rows ── */
+  let rowCount = 0;
+
+  function addMedRow(name, total) {
+    rowCount++;
+    const id = 'row_' + rowCount;
+    const div = document.createElement('div');
+    div.className = 'med-row';
+    div.id = id;
+    div.innerHTML = `
+      <div class="med-row-label">
+        <span>دواء ${rowCount}</span>
+        <button class="remove-btn" onclick="removeRow('${id}')">✕</button>
+      </div>
+      <div class="med-row-fields">
+        <div class="field">
+          <label>اسم الدواء</label>
+          <input type="text" class="med-name" placeholder="مثال: أوميبرازول" maxlength="30" value="${name||''}" />
+        </div>
+        <div class="field">
+          <label>الأيام</label>
+          <input type="number" class="med-total" placeholder="30" min="1" max="999" value="${total||''}" />
+        </div>
+      </div>`;
+    document.getElementById('medRows').appendChild(div);
+  }
+
+  function removeRow(id) {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+    reNumberRows();
+  }
+
+  function reNumberRows() {
+    const rows = document.querySelectorAll('.med-row');
+    rows.forEach((r, i) => {
+      const label = r.querySelector('.med-row-label span');
+      if (label) label.textContent = 'دواء ' + (i + 1);
+    });
+  }
+
+  /* ── go to setup (edit mode) ── */
+  function goSetup() {
+    const data = load();
+    document.getElementById('medRows').innerHTML = '';
+    rowCount = 0;
+    if (data && data.meds) {
+      data.meds.forEach(m => addMedRow(m.name, m.total));
+    }
+    if (rowCount === 0) addMedRow();
+    showSetup();
+  }
+
+  /* ── start / save ── */
+  function startApp() {
+    const rows = document.querySelectorAll('.med-row');
+    const err  = document.getElementById('errMsg');
+    if (rows.length === 0) { err.textContent = 'أضف دواءاً واحداً على الأقل'; return; }
+
+    const existing = load() || {};
+    const oldMeds  = existing.meds || [];
+    const meds = [];
+
+    for (let i = 0; i < rows.length; i++) {
+      const name  = rows[i].querySelector('.med-name').value.trim();
+      const total = parseInt(rows[i].querySelector('.med-total').value);
+      if (!name)        { err.textContent = `أدخل اسم الدواء ${i+1}`; return; }
+      if (!total || total < 1) { err.textContent = `أدخل عدد أيام الدواء ${i+1}`; return; }
+
+      // keep existing days history if same name
+      const prev = oldMeds.find(m => m.name === name);
+      meds.push({ name, total, days: prev ? prev.days : {} });
+    }
+
+    err.textContent = '';
+    save({ meds });
+    showHome();
+  }
+
+  /* ── dots ── */
+  function buildDots(container, days, total) {
+    container.innerHTML = '';
+    const show = Math.min(total, 42);
+    const n = Object.keys(days).length;
+    for (let i = 0; i < show; i++) {
+      const d = document.createElement('div');
+      d.className = 'dot ' + (i < n ? 'done' : i === n ? 'today-dot' : 'empty');
+      container.appendChild(d);
+    }
+  }
+
+  /* ── streak ── */
   function calcStreak(days) {
     const keys = Object.keys(days).filter(k => days[k]).sort().reverse();
     if (!keys.length) return 0;
-    let streak = 0;
-    const today = new Date(); today.setHours(0,0,0,0);
-    let expected = new Date(today);
+    let s = 0; let exp = new Date(); exp.setHours(0,0,0,0);
     for (const k of keys) {
-      const d = new Date(k);
-      d.setHours(0,0,0,0);
-      const diff = Math.round((expected - d) / 86400000);
-      if (diff <= 1) { streak++; expected = d; }
-      else break;
+      const d = new Date(k); d.setHours(0,0,0,0);
+      if (Math.round((exp - d) / 86400000) <= 1) { s++; exp = d; } else break;
     }
-    return streak;
+    return s;
   }
 
+  /* ── render home ── */
   function render() {
-    const data = load();
+    const data = load(); if (!data || !data.meds) return;
     const today = todayKey();
+    const list  = document.getElementById('cardsList');
+    list.innerHTML = '';
 
-    document.getElementById('nameA').textContent = data.nameA || 'الدواء الأول';
-    document.getElementById('nameB').textContent = data.nameB || 'الدواء الثاني';
+    data.meds.forEach((med, idx) => {
+      const isDark = idx % 2 === 0;
+      const count  = Object.keys(med.days).length;
+      const rem    = Math.max(0, med.total - count);
+      const pct    = Math.min(100, Math.round(count / med.total * 100));
+      const taken  = med.days[today] === true;
 
-    ['A','B'].forEach(w => {
-      const days = w === 'A' ? data.daysA : data.daysB;
-      const total = TOTAL[w];
-      const count = Object.keys(days).length;
-      const rem = Math.max(0, total - count);
-      const pct = Math.min(100, Math.round((count / total) * 100));
-      const takenToday = days[today] === true;
-
-      document.getElementById('rem' + w).textContent = rem;
-      document.getElementById('prog' + w).style.width = pct + '%';
-      buildDots('dots' + w, days, total, w);
-
-      const btn = document.getElementById('btn' + w);
-      if (takenToday) {
-        btn.textContent = '✓ تم اليوم';
-        btn.classList.add('taken');
-      } else {
-        btn.textContent = 'أخذته ✓';
-        btn.classList.remove('taken');
-      }
+      const card = document.createElement('div');
+      card.className = 'card ' + (isDark ? 'dark' : 'light');
+      card.id = 'card_' + idx;
+      card.innerHTML = `
+        <div class="card-bg-num">${med.total}</div>
+        <div class="card-tag">دواء ${idx + 1}</div>
+        <div class="card-name">${med.name}</div>
+        <div class="dot-track" id="dots_${idx}"></div>
+        <div class="prog-wrap"><div class="prog-fill" style="width:${pct}%"></div></div>
+        <div class="card-bottom">
+          <div><div class="days-num">${rem}</div><div class="days-label">يوم متبقي</div></div>
+          <button class="take-btn ${taken?'taken':''}" onclick="take(${idx})">
+            ${taken ? '✓ تم اليوم' : 'أخذته ✓'}
+          </button>
+        </div>`;
+      list.appendChild(card);
+      buildDots(card.querySelector('#dots_' + idx), med.days, med.total);
     });
 
-    const sa = calcStreak(data.daysA);
-    const sb = calcStreak(data.daysB);
-    document.getElementById('streakNum').textContent = Math.min(sa, sb);
+    // streak = min across all meds
+    const streaks = data.meds.map(m => calcStreak(m.days));
+    document.getElementById('streakNum').textContent = streaks.length ? Math.min(...streaks) : 0;
   }
 
-  function take(which) {
-    const data = load();
+  /* ── take dose ── */
+  function take(idx) {
+    const data  = load(); if (!data) return;
     const today = todayKey();
-    const key = which === 'A' ? 'daysA' : 'daysB';
-    if (data[key][today]) return;
-    data[key][today] = true;
-    save(data);
-    render();
-    const card = document.getElementById('card' + which);
-    card.classList.remove('pop');
-    void card.offsetWidth;
-    card.classList.add('pop');
+    if (data.meds[idx].days[today]) return;
+    data.meds[idx].days[today] = true;
+    save(data); render();
+    const card = document.getElementById('card_' + idx);
+    if (card) { card.classList.remove('pop'); void card.offsetWidth; card.classList.add('pop'); }
   }
 
+  /* ── reset ── */
   function resetAll() {
-    if (!confirm('تأكيد: هل تريد مسح كل السجلات؟')) return;
-    localStorage.removeItem(STORE_KEY);
-    render();
+    if (!confirm('هل تريد مسح كل شيء والبدء من الصفر؟')) return;
+    localStorage.removeItem(KEY);
+    document.getElementById('medRows').innerHTML = '';
+    rowCount = 0;
+    addMedRow();
+    showSetup();
   }
 
-  // Date display
+  /* ── date ── */
   function setDate() {
-    const now = new Date();
-    const days = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+    const now    = new Date();
+    const days   = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
     const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
     document.getElementById('dateDisplay').innerHTML =
       `<strong>${days[now.getDay()]}</strong>${now.getDate()} ${months[now.getMonth()]}`;
   }
 
-  setDate();
-  render();
+  /* ── boot ── */
+  addMedRow();
+  init();
 </script>
 </body>
 </html>
