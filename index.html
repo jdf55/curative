@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>دوائي</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #0D0D0D;
+      --paper: #F5F0E8;
+      --card-dark: #0D0D0D;
+      --card-light: #EDE8DF;
+      --accent: #C8FF00;
+      --accent2: #FF6B35;
+      --text-muted: rgba(13,13,13,0.4);
+      --radius: 22px;
+    }
+
+    html, body {
+      min-height: 100vh;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    /* grain texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 440px;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem 4rem;
+      min-height: 100vh;
+    }
+
+    /* ─── Header ─── */
+    .header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 2.5rem;
+    }
+    .header-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 38px;
+      font-weight: 800;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+    }
+    .header-date {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: left;
+      line-height: 1.5;
+    }
+    .header-date strong {
+      display: block;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    /* ─── Cards ─── */
+    .card {
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      margin-bottom: 1rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.12s ease;
+      cursor: default;
+    }
+    .card:active { transform: scale(0.985); }
+
+    .card-dark {
+      background: var(--card-dark);
+      color: #fff;
+    }
+    .card-light {
+      background: var(--card-light);
+      color: var(--ink);
+      border: 1.5px solid rgba(13,13,13,0.08);
+    }
+
+    /* big number bg */
+    .card-bg-num {
+      position: absolute;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 160px;
+      line-height: 1;
+      opacity: 0.04;
+      left: -10px;
+      bottom: -20px;
+      pointer-events: none;
+      user-select: none;
+    }
+    .card-dark .card-bg-num { color: #fff; }
+    .card-light .card-bg-num { color: #000; }
+
+    .card-tag {
+      font-family: 'Syne', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+      opacity: 0.45;
+    }
+    .card-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 1.25rem;
+      line-height: 1.1;
+    }
+
+    /* dot track */
+    .dot-track {
+      display: flex;
+      gap: 3px;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+    .card-dark .dot.done  { background: var(--accent); }
+    .card-dark .dot.empty { background: rgba(255,255,255,0.12); }
+    .card-dark .dot.today-dot { background: rgba(255,255,255,0.35); box-shadow: 0 0 0 2px var(--accent); }
+
+    .card-light .dot.done  { background: var(--ink); }
+    .card-light .dot.empty { background: rgba(13,13,13,0.1); }
+    .card-light .dot.today-dot { background: rgba(13,13,13,0.2); box-shadow: 0 0 0 2px var(--ink); }
+
+    /* progress bar */
+    .prog-wrap {
+      height: 3px;
+      border-radius: 2px;
+      margin-bottom: 1.25rem;
+    }
+    .card-dark .prog-wrap  { background: rgba(255,255,255,0.1); }
+    .card-light .prog-wrap { background: rgba(13,13,13,0.1); }
+    .prog-fill {
+      height: 3px;
+      border-radius: 2px;
+      transition: width 0.6s cubic-bezier(.4,0,.2,1);
+    }
+    .card-dark .prog-fill  { background: var(--accent); }
+    .card-light .prog-fill { background: var(--ink); }
+
+    /* bottom row */
+    .card-bottom {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+    .days-left-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 44px;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .card-dark .days-left-num { color: var(--accent); }
+    .card-light .days-left-num { color: var(--ink); }
+    .days-left-label {
+      font-size: 11px;
+      opacity: 0.45;
+      margin-top: 3px;
+    }
+
+    /* take button */
+    .take-btn {
+      border: none;
+      border-radius: 50px;
+      padding: 0.55rem 1.2rem;
+      font-family: 'Syne', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .take-btn:active { transform: scale(0.95); }
+
+    .card-dark .take-btn          { background: var(--accent); color: #000; }
+    .card-dark .take-btn.taken    { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.4); cursor: default; }
+
+    .card-light .take-btn         { background: var(--ink); color: #fff; }
+    .card-light .take-btn.taken   { background: rgba(13,13,13,0.1); color: rgba(13,13,13,0.35); cursor: default; }
+
+    /* ─── Streak ─── */
+    .streak-box {
+      margin-top: 1.25rem;
+      border-radius: var(--radius);
+      border: 1.5px solid rgba(13,13,13,0.08);
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      background: rgba(255,255,255,0.5);
+    }
+    .streak-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .streak-circle-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+    .streak-text-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+    .streak-text-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* ─── Reset ─── */
+    .reset-link {
+      display: block;
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 11px;
+      color: var(--text-muted);
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .reset-link:hover { color: var(--accent2); }
+
+    /* ─── Taken animation ─── */
+    @keyframes pop {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(1.06); }
+      100% { transform: scale(1); }
+    }
+    .pop { animation: pop 0.25s ease; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-title">دوائي<br/>اليوم</div>
+    <div class="header-date" id="dateDisplay"></div>
+  </div>
+
+  <!-- Card A: 90 days -->
+  <div class="card card-dark" id="cardA">
+    <div class="card-bg-num">90</div>
+    <div class="card-tag">دواء الأول</div>
+    <div class="card-name" id="nameA">الدواء الأول</div>
+    <div class="dot-track" id="dotsA"></div>
+    <div class="prog-wrap"><div class="prog-fill" id="progA" style="width:0%"></div></div>
+    <div class="card-bottom">
+      <div>
+        <div class="days-left-num" id="remA">90</div>
+        <div class="days-left-label">يوم متبقي</div>
+      </div>
+      <button class="take-btn" id="btnA" onclick="take('A')">أخذته ✓</button>
+    </div>
+  </div>
+
+  <!-- Card B: 30 days -->
+  <div class="card card-light" id="cardB">
+    <div class="card-bg-num">30</div>
+    <div class="card-tag">الدواء الثاني</div>
+    <div class="card-name" id="nameB">الدواء الثاني</div>
+    <div class="dot-track" id="dotsB"></div>
+    <div class="prog-wrap"><div class="prog-fill" id="progB" style="width:0%"></div></div>
+    <div class="card-bottom">
+      <div>
+        <div class="days-left-num" id="remB">30</div>
+        <div class="days-left-label">يوم متبقي</div>
+      </div>
+      <button class="take-btn" id="btnB" onclick="take('B')">أخذته ✓</button>
+    </div>
+  </div>
+
+  <!-- Streak -->
+  <div class="streak-box">
+    <div class="streak-circle">
+      <span class="streak-circle-num" id="streakNum">0</span>
+    </div>
+    <div>
+      <div class="streak-text-title">أيام متواصلة</div>
+      <div class="streak-text-sub">كل ما زادت الأيام،<br/>كلما تحسّن التزامك</div>
+    </div>
+  </div>
+
+  <a class="reset-link" onclick="resetAll()">↺ إعادة ضبط كل شيء</a>
+
+</div>
+
+<script>
+  const TOTAL = { A: 90, B: 30 };
+  const STORE_KEY = 'dawai_v2';
+
+  function load() {
+    try { return JSON.parse(localStorage.getItem(STORE_KEY)) || { daysA:{}, daysB:{}, nameA:'الدواء الأول', nameB:'الدواء الثاني' }; }
+    catch(e) { return { daysA:{}, daysB:{}, nameA:'الدواء الأول', nameB:'الدواء الثاني' }; }
+  }
+  function save(d) { try { localStorage.setItem(STORE_KEY, JSON.stringify(d)); } catch(e){} }
+  function todayKey() { return new Date().toISOString().slice(0,10); }
+
+  function buildDots(containerId, days, total, cardType) {
+    const c = document.getElementById(containerId);
+    c.innerHTML = '';
+    const show = Math.min(total, 35);
+    const takenKeys = Object.keys(days).sort();
+    const takenCount = takenKeys.length;
+    for (let i = 0; i < show; i++) {
+      const d = document.createElement('div');
+      if (i < takenCount) {
+        d.className = 'dot done';
+      } else if (i === takenCount) {
+        d.className = 'dot today-dot';
+      } else {
+        d.className = 'dot empty';
+      }
+      c.appendChild(d);
+    }
+  }
+
+  function calcStreak(days) {
+    const keys = Object.keys(days).filter(k => days[k]).sort().reverse();
+    if (!keys.length) return 0;
+    let streak = 0;
+    const today = new Date(); today.setHours(0,0,0,0);
+    let expected = new Date(today);
+    for (const k of keys) {
+      const d = new Date(k);
+      d.setHours(0,0,0,0);
+      const diff = Math.round((expected - d) / 86400000);
+      if (diff <= 1) { streak++; expected = d; }
+      else break;
+    }
+    return streak;
+  }
+
+  function render() {
+    const data = load();
+    const today = todayKey();
+
+    document.getElementById('nameA').textContent = data.nameA || 'الدواء الأول';
+    document.getElementById('nameB').textContent = data.nameB || 'الدواء الثاني';
+
+    ['A','B'].forEach(w => {
+      const days = w === 'A' ? data.daysA : data.daysB;
+      const total = TOTAL[w];
+      const count = Object.keys(days).length;
+      const rem = Math.max(0, total - count);
+      const pct = Math.min(100, Math.round((count / total) * 100));
+      const takenToday = days[today] === true;
+
+      document.getElementById('rem' + w).textContent = rem;
+      document.getElementById('prog' + w).style.width = pct + '%';
+      buildDots('dots' + w, days, total, w);
+
+      const btn = document.getElementById('btn' + w);
+      if (takenToday) {
+        btn.textContent = '✓ تم اليوم';
+        btn.classList.add('taken');
+      } else {
+        btn.textContent = 'أخذته ✓';
+        btn.classList.remove('taken');
+      }
+    });
+
+    const sa = calcStreak(data.daysA);
+    const sb = calcStreak(data.daysB);
+    document.getElementById('streakNum').textContent = Math.min(sa, sb);
+  }
+
+  function take(which) {
+    const data = load();
+    const today = todayKey();
+    const key = which === 'A' ? 'daysA' : 'daysB';
+    if (data[key][today]) return;
+    data[key][today] = true;
+    save(data);
+    render();
+    const card = document.getElementById('card' + which);
+    card.classList.remove('pop');
+    void card.offsetWidth;
+    card.classList.add('pop');
+  }
+
+  function resetAll() {
+    if (!confirm('تأكيد: هل تريد مسح كل السجلات؟')) return;
+    localStorage.removeItem(STORE_KEY);
+    render();
+  }
+
+  // Date display
+  function setDate() {
+    const now = new Date();
+    const days = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+    const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+    document.getElementById('dateDisplay').innerHTML =
+      `<strong>${days[now.getDay()]}</strong>${now.getDate()} ${months[now.getMonth()]}`;
+  }
+
+  setDate();
+  render();
+</script>
+</body>
+</html>
