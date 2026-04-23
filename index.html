@@ -12,19 +12,51 @@
     :root {
       --ink: #0D0D0D;
       --paper: #F5F0E8;
-      --card-dark: #0D0D0D;
-      --card-light: #EDE8DF;
+      --card-dark-bg: #0D0D0D;
+      --card-light-bg: #EDE8DF;
       --accent: #C8FF00;
       --accent2: #FF6B35;
       --muted: rgba(13,13,13,0.4);
       --radius: 22px;
+      --icon-btn-bg: #EDE8DF;
+      --icon-btn-hover: #ddd8cf;
+      --add-btn-border: rgba(13,13,13,0.2);
+      --add-btn-hover-border: rgba(13,13,13,0.4);
+      --add-btn-color: rgba(13,13,13,0.4);
+      --add-btn-hover-color: #0D0D0D;
+      --streak-bg: rgba(255,255,255,0.5);
+      --streak-border: rgba(13,13,13,0.08);
     }
 
-    html, body { min-height: 100vh; background: var(--paper); color: var(--ink); font-family: 'DM Sans', sans-serif; }
+    html.dark {
+      --ink: #F0EBE1;
+      --paper: #131210;
+      --card-dark-bg: #1E1C18;
+      --card-light-bg: #252320;
+      --accent: #C8FF00;
+      --accent2: #FF6B35;
+      --muted: rgba(240,235,225,0.38);
+      --icon-btn-bg: #252320;
+      --icon-btn-hover: #2f2d29;
+      --add-btn-border: rgba(240,235,225,0.18);
+      --add-btn-hover-border: rgba(240,235,225,0.38);
+      --add-btn-color: rgba(240,235,225,0.35);
+      --add-btn-hover-color: #F0EBE1;
+      --streak-bg: rgba(255,255,255,0.04);
+      --streak-border: rgba(255,255,255,0.07);
+    }
+
+    html, body {
+      min-height: 100vh;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      transition: background 0.3s, color 0.3s;
+    }
 
     body::before {
       content: ''; position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
       pointer-events: none; z-index: 0;
     }
 
@@ -36,20 +68,28 @@
     .setup-heading { font-family: 'Syne', sans-serif; font-size: 40px; font-weight: 800; line-height: 0.95; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
     .setup-sub { font-size: 13px; color: var(--muted); margin-bottom: 2rem; line-height: 1.5; }
 
-    /* med row */
     .med-rows { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
 
     .med-row {
-      background: var(--card-dark);
+      background: var(--card-dark-bg);
       border-radius: 18px;
       padding: 1.25rem;
       position: relative;
       color: #fff;
+      transition: background 0.3s;
     }
+    html.dark .med-row { color: var(--ink); }
+
     .med-row:nth-child(even) {
-      background: var(--card-light);
+      background: var(--card-light-bg);
       color: var(--ink);
       border: 1.5px solid rgba(13,13,13,0.08);
+    }
+    html.dark .med-row:nth-child(even) {
+      border-color: rgba(255,255,255,0.06);
+    }
+    html.dark .med-row:nth-child(odd) {
+      color: var(--ink);
     }
 
     .med-row-label {
@@ -59,47 +99,49 @@
       opacity: 0.4; margin-bottom: 0.9rem;
       display: flex; align-items: center; justify-content: space-between;
     }
-
     .remove-btn {
       background: none; border: none; cursor: pointer;
-      font-size: 16px; opacity: 0.35;
-      line-height: 1; padding: 0;
-      transition: opacity 0.15s;
+      font-size: 15px; opacity: 0.35; line-height: 1; padding: 0;
+      color: inherit; transition: opacity 0.15s;
     }
     .remove-btn:hover { opacity: 0.8; }
-    .med-row:nth-child(odd)  .remove-btn { color: #fff; }
-    .med-row:nth-child(even) .remove-btn { color: var(--ink); }
 
     .med-row-fields { display: grid; grid-template-columns: 1fr 100px; gap: 8px; }
 
-    .field label { display: block; font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 4px; }
-    .med-row:nth-child(odd)  .field label { color: rgba(255,255,255,0.38); }
-    .med-row:nth-child(even) .field label { color: var(--muted); }
+    .field label { display: block; font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 4px; color: var(--muted); }
 
     .field input {
       width: 100%; border-radius: 10px; border: none;
       padding: 0.55rem 0.75rem;
       font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
       outline: none; transition: box-shadow 0.15s; -webkit-appearance: none;
+      background: rgba(255,255,255,0.09); color: #fff;
     }
-    .med-row:nth-child(odd)  .field input { background: rgba(255,255,255,0.09); color: #fff; }
-    .med-row:nth-child(odd)  .field input::placeholder { color: rgba(255,255,255,0.2); }
-    .med-row:nth-child(odd)  .field input:focus { box-shadow: 0 0 0 2px var(--accent); }
-    .med-row:nth-child(even) .field input { background: rgba(255,255,255,0.75); color: var(--ink); }
-    .med-row:nth-child(even) .field input::placeholder { color: rgba(13,13,13,0.22); }
-    .med-row:nth-child(even) .field input:focus { box-shadow: 0 0 0 2px var(--ink); }
+    html.dark .field input { background: rgba(255,255,255,0.07); color: var(--ink); }
+    .field input::placeholder { color: rgba(255,255,255,0.2); }
+    html.dark .field input::placeholder { color: rgba(240,235,225,0.25); }
+    .field input:focus { box-shadow: 0 0 0 2px var(--accent); }
 
-    /* add button */
+    .med-row:nth-child(even) .field input {
+      background: rgba(255,255,255,0.65);
+      color: var(--ink);
+    }
+    .med-row:nth-child(even) .field input::placeholder { color: rgba(13,13,13,0.22); }
+    html.dark .med-row:nth-child(even) .field input {
+      background: rgba(255,255,255,0.08);
+      color: var(--ink);
+    }
+
     .add-med-btn {
       width: 100%; padding: 0.9rem;
       background: none;
-      border: 1.5px dashed rgba(13,13,13,0.2);
+      border: 1.5px dashed var(--add-btn-border);
       border-radius: 18px;
       font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
-      color: var(--muted); cursor: pointer;
+      color: var(--add-btn-color); cursor: pointer;
       transition: all 0.15s; letter-spacing: 0.05em;
     }
-    .add-med-btn:hover { border-color: rgba(13,13,13,0.4); color: var(--ink); }
+    .add-med-btn:hover { border-color: var(--add-btn-hover-border); color: var(--add-btn-hover-color); }
 
     .start-btn {
       width: 100%; margin-top: 1.25rem; padding: 1.1rem;
@@ -120,55 +162,70 @@
     .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
     .header-date  { font-size: 12px; color: var(--muted); text-align: left; line-height: 1.5; }
     .header-date strong { display: block; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--ink); }
+
+    .header-btns { display: flex; gap: 6px; }
     .icon-btn {
-      background: var(--card-light); border: none; border-radius: 50%;
+      background: var(--icon-btn-bg); border: none; border-radius: 50%;
       width: 36px; height: 36px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      font-size: 15px; transition: background 0.15s;
+      transition: background 0.2s;
+      flex-shrink: 0;
     }
-    .icon-btn:hover { background: #ddd8cf; }
+    .icon-btn:hover { background: var(--icon-btn-hover); }
+    .icon-btn svg { width: 16px; height: 16px; }
 
-    /* med cards */
     .cards-list { display: flex; flex-direction: column; gap: 10px; }
 
     .card {
       border-radius: var(--radius); padding: 1.75rem;
       position: relative; overflow: hidden;
-      transition: transform 0.12s;
+      transition: transform 0.12s, background 0.3s;
     }
     .card:active { transform: scale(0.985); }
-    .card.dark  { background: var(--card-dark); color: #fff; }
-    .card.light { background: var(--card-light); color: var(--ink); border: 1.5px solid rgba(13,13,13,0.08); }
+    .card.dark  { background: var(--card-dark-bg); color: var(--ink); }
+    .card.light { background: var(--card-light-bg); color: var(--ink); border: 1.5px solid rgba(13,13,13,0.08); }
+    html.dark .card.light { border-color: rgba(255,255,255,0.06); }
 
-    .card-bg-num { position: absolute; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 150px; line-height: 1; opacity: 0.04; left: -8px; bottom: -18px; pointer-events: none; user-select: none; }
-    .card.dark .card-bg-num  { color: #fff; }
-    .card.light .card-bg-num { color: #000; }
+    /* force white text only in light mode dark cards */
+    html:not(.dark) .card.dark { color: #fff; }
+    html:not(.dark) .card.dark .card-name { color: #fff; }
+    html:not(.dark) .card.dark .days-num  { color: var(--accent); }
+
+    html.dark .card.dark .card-name { color: var(--ink); }
+    html.dark .card.dark .days-num  { color: var(--accent); }
+
+    .card-bg-num { position: absolute; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 150px; line-height: 1; opacity: 0.05; left: -8px; bottom: -18px; pointer-events: none; user-select: none; color: var(--ink); }
 
     .card-tag  { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.4; margin-bottom: 0.3rem; }
-    .card-name { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; line-height: 1.1; margin-bottom: 1.1rem; }
-    .card.dark .card-name  { color: #fff; }
-    .card.light .card-name { color: var(--ink); }
+    .card-name { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; line-height: 1.1; margin-bottom: 1.1rem; color: var(--ink); }
 
     .dot-track { display: flex; gap: 3px; flex-wrap: wrap; margin-bottom: 0.9rem; }
     .dot { width: 7px; height: 7px; border-radius: 50%; }
-    .card.dark .dot.done       { background: var(--accent); }
-    .card.dark .dot.empty      { background: rgba(255,255,255,0.12); }
-    .card.dark .dot.today-dot  { background: rgba(255,255,255,0.3); box-shadow: 0 0 0 2px var(--accent); }
-    .card.light .dot.done      { background: var(--ink); }
-    .card.light .dot.empty     { background: rgba(13,13,13,0.1); }
-    .card.light .dot.today-dot { background: rgba(13,13,13,0.18); box-shadow: 0 0 0 2px var(--ink); }
 
-    .prog-wrap { height: 3px; border-radius: 2px; margin-bottom: 1.1rem; }
-    .card.dark .prog-wrap  { background: rgba(255,255,255,0.1); }
-    .card.light .prog-wrap { background: rgba(13,13,13,0.1); }
-    .prog-fill { height: 3px; border-radius: 2px; transition: width 0.6s cubic-bezier(.4,0,.2,1); }
-    .card.dark .prog-fill  { background: var(--accent); }
-    .card.light .prog-fill { background: var(--ink); }
+    html:not(.dark) .card.dark .dot.done       { background: var(--accent); }
+    html:not(.dark) .card.dark .dot.empty      { background: rgba(255,255,255,0.15); }
+    html:not(.dark) .card.dark .dot.today-dot  { background: rgba(255,255,255,0.3); box-shadow: 0 0 0 2px var(--accent); }
+    html:not(.dark) .card.light .dot.done      { background: var(--ink); }
+    html:not(.dark) .card.light .dot.empty     { background: rgba(13,13,13,0.1); }
+    html:not(.dark) .card.light .dot.today-dot { background: rgba(13,13,13,0.18); box-shadow: 0 0 0 2px var(--ink); }
+
+    html.dark .card .dot.done      { background: var(--accent); }
+    html.dark .card .dot.empty     { background: rgba(240,235,225,0.12); }
+    html.dark .card .dot.today-dot { background: rgba(240,235,225,0.25); box-shadow: 0 0 0 2px var(--accent); }
+
+    .prog-wrap { height: 3px; border-radius: 2px; margin-bottom: 1.1rem; background: rgba(13,13,13,0.1); }
+    html:not(.dark) .card.dark .prog-wrap { background: rgba(255,255,255,0.12); }
+    html.dark .prog-wrap { background: rgba(240,235,225,0.1); }
+
+    .prog-fill { height: 3px; border-radius: 2px; transition: width 0.6s cubic-bezier(.4,0,.2,1); background: var(--ink); }
+    html:not(.dark) .card.dark .prog-fill { background: var(--accent); }
+    html.dark .prog-fill { background: var(--accent); }
 
     .card-bottom { display: flex; align-items: flex-end; justify-content: space-between; }
-    .days-num    { font-family: 'Syne', sans-serif; font-size: 42px; font-weight: 800; line-height: 1; }
-    .card.dark .days-num  { color: var(--accent); }
-    .card.light .days-num { color: var(--ink); }
+    .days-num { font-family: 'Syne', sans-serif; font-size: 42px; font-weight: 800; line-height: 1; color: var(--ink); }
+    html:not(.dark) .card.dark .days-num { color: var(--accent); }
+    html.dark .days-num { color: var(--accent); }
+
     .days-label { font-size: 11px; opacity: 0.4; margin-top: 3px; }
 
     .take-btn {
@@ -178,19 +235,23 @@
       cursor: pointer; transition: all 0.15s; white-space: nowrap;
     }
     .take-btn:active { transform: scale(0.95); }
-    .card.dark .take-btn        { background: var(--accent); color: #000; }
-    .card.dark .take-btn.taken  { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.35); cursor: default; }
-    .card.light .take-btn       { background: var(--ink); color: #fff; }
-    .card.light .take-btn.taken { background: rgba(13,13,13,0.1); color: rgba(13,13,13,0.3); cursor: default; }
 
-    /* streak */
+    html:not(.dark) .card.dark .take-btn        { background: var(--accent); color: #000; }
+    html:not(.dark) .card.dark .take-btn.taken  { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.35); cursor: default; }
+    html:not(.dark) .card.light .take-btn       { background: var(--ink); color: #fff; }
+    html:not(.dark) .card.light .take-btn.taken { background: rgba(13,13,13,0.1); color: rgba(13,13,13,0.3); cursor: default; }
+
+    html.dark .take-btn        { background: var(--accent); color: #000; }
+    html.dark .take-btn.taken  { background: rgba(240,235,225,0.1); color: rgba(240,235,225,0.3); cursor: default; }
+
     .streak-box {
       margin-top: 1rem; border-radius: var(--radius);
-      border: 1.5px solid rgba(13,13,13,0.08); padding: 1.5rem;
+      border: 1.5px solid var(--streak-border); padding: 1.5rem;
       display: flex; align-items: center; gap: 1.25rem;
-      background: rgba(255,255,255,0.5);
+      background: var(--streak-bg);
+      transition: background 0.3s, border-color 0.3s;
     }
-    .streak-circle { width: 60px; height: 60px; border-radius: 50%; background: var(--ink); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .streak-circle { width: 60px; height: 60px; border-radius: 50%; background: var(--ink); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.3s; }
     .streak-num   { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--accent); }
     .streak-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 3px; }
     .streak-sub   { font-size: 12px; color: var(--muted); line-height: 1.4; }
@@ -215,9 +276,7 @@
   <p class="setup-sub">سجّل كل دواء مرة واحدة،<br/>وبعدها كل يوم بضغطة.</p>
 
   <div class="med-rows" id="medRows"></div>
-
   <button class="add-med-btn" onclick="addMedRow()">+ أضف دواء</button>
-
   <button class="start-btn" onclick="startApp()">ابدأ التتبع ←</button>
   <div class="err-msg" id="errMsg"></div>
 </div>
@@ -228,7 +287,32 @@
   <div class="header">
     <div class="header-title">دوائي<br/>اليوم</div>
     <div class="header-right">
-      <button class="icon-btn" onclick="goSetup()" title="الإعدادات">⚙</button>
+      <div class="header-btns">
+
+        <!-- dark mode toggle -->
+        <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="تغيير المظهر">
+          <!-- sun icon -->
+          <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+            <circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <!-- moon icon -->
+          <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+
+        <!-- settings -->
+        <button class="icon-btn" onclick="goSetup()" title="الإعدادات">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+
+      </div>
       <div class="header-date" id="dateDisplay"></div>
     </div>
   </div>
@@ -248,23 +332,37 @@
 
 
 <script>
-  const KEY = 'dawai_v5';
+  const KEY       = 'dawai_v5';
+  const THEME_KEY = 'dawai_theme';
 
-  function load() {
-    try { return JSON.parse(localStorage.getItem(KEY)) || null; }
-    catch(e) { return null; }
+  /* ── theme ── */
+  function applyTheme(dark) {
+    document.documentElement.classList.toggle('dark', dark);
+    document.getElementById('iconSun').style.display  = dark  ? 'block' : 'none';
+    document.getElementById('iconMoon').style.display = dark  ? 'none'  : 'block';
   }
+  function toggleTheme() {
+    const isDark = !document.documentElement.classList.contains('dark');
+    localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
+    applyTheme(isDark);
+  }
+  function initTheme() {
+    const saved  = localStorage.getItem(THEME_KEY);
+    const prefer = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(saved ? saved === 'dark' : prefer);
+  }
+
+  /* ── data ── */
+  function load() { try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch(e) { return null; } }
   function save(d) { try { localStorage.setItem(KEY, JSON.stringify(d)); } catch(e){} }
   function todayKey() { return new Date().toISOString().slice(0,10); }
 
   /* ── init ── */
   function init() {
+    initTheme();
     const data = load();
-    if (data && data.meds && data.meds.length > 0) {
-      showHome();
-    } else {
-      showSetup();
-    }
+    if (data && data.meds && data.meds.length > 0) showHome();
+    else showSetup();
   }
 
   /* ── screens ── */
@@ -279,13 +377,21 @@
     setDate(); render();
     window.scrollTo(0,0);
   }
+  function goSetup() {
+    const data = load();
+    document.getElementById('medRows').innerHTML = '';
+    rowCount = 0;
+    if (data && data.meds) data.meds.forEach(m => addMedRow(m.name, m.total));
+    if (rowCount === 0) addMedRow();
+    showSetup();
+  }
 
-  /* ── setup: build rows ── */
+  /* ── setup rows ── */
   let rowCount = 0;
 
   function addMedRow(name, total) {
     rowCount++;
-    const id = 'row_' + rowCount;
+    const id  = 'row_' + rowCount;
     const div = document.createElement('div');
     div.className = 'med-row';
     div.id = id;
@@ -312,48 +418,29 @@
     if (el) el.remove();
     reNumberRows();
   }
-
   function reNumberRows() {
-    const rows = document.querySelectorAll('.med-row');
-    rows.forEach((r, i) => {
+    document.querySelectorAll('.med-row').forEach((r, i) => {
       const label = r.querySelector('.med-row-label span');
       if (label) label.textContent = 'دواء ' + (i + 1);
     });
   }
 
-  /* ── go to setup (edit mode) ── */
-  function goSetup() {
-    const data = load();
-    document.getElementById('medRows').innerHTML = '';
-    rowCount = 0;
-    if (data && data.meds) {
-      data.meds.forEach(m => addMedRow(m.name, m.total));
-    }
-    if (rowCount === 0) addMedRow();
-    showSetup();
-  }
-
-  /* ── start / save ── */
+  /* ── start ── */
   function startApp() {
     const rows = document.querySelectorAll('.med-row');
     const err  = document.getElementById('errMsg');
     if (rows.length === 0) { err.textContent = 'أضف دواءاً واحداً على الأقل'; return; }
-
     const existing = load() || {};
     const oldMeds  = existing.meds || [];
     const meds = [];
-
     for (let i = 0; i < rows.length; i++) {
       const name  = rows[i].querySelector('.med-name').value.trim();
       const total = parseInt(rows[i].querySelector('.med-total').value);
-      if (!name)        { err.textContent = `أدخل اسم الدواء ${i+1}`; return; }
+      if (!name)       { err.textContent = `أدخل اسم الدواء ${i+1}`; return; }
       if (!total || total < 1) { err.textContent = `أدخل عدد أيام الدواء ${i+1}`; return; }
-
-      // keep existing days history if same name
       const prev = oldMeds.find(m => m.name === name);
       meds.push({ name, total, days: prev ? prev.days : {} });
     }
-
     err.textContent = '';
     save({ meds });
     showHome();
@@ -383,7 +470,7 @@
     return s;
   }
 
-  /* ── render home ── */
+  /* ── render ── */
   function render() {
     const data = load(); if (!data || !data.meds) return;
     const today = todayKey();
@@ -416,14 +503,13 @@
       buildDots(card.querySelector('#dots_' + idx), med.days, med.total);
     });
 
-    // streak = min across all meds
     const streaks = data.meds.map(m => calcStreak(m.days));
     document.getElementById('streakNum').textContent = streaks.length ? Math.min(...streaks) : 0;
   }
 
-  /* ── take dose ── */
+  /* ── take ── */
   function take(idx) {
-    const data  = load(); if (!data) return;
+    const data = load(); if (!data) return;
     const today = todayKey();
     if (data.meds[idx].days[today]) return;
     data.meds[idx].days[today] = true;
@@ -451,7 +537,6 @@
       `<strong>${days[now.getDay()]}</strong>${now.getDate()} ${months[now.getMonth()]}`;
   }
 
-  /* ── boot ── */
   addMedRow();
   init();
 </script>
