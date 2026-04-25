@@ -69,7 +69,7 @@
     .remove-btn { background:none; border:none; cursor:pointer; font-size:15px; opacity:.35; line-height:1; padding:0; color:inherit; transition:opacity .15s; }
     .remove-btn:hover { opacity:.8; }
 
-    .med-row-fields   { display:grid; grid-template-columns:1fr 90px; gap:8px; }
+    .med-row-fields   { display:grid; grid-template-columns:1fr 75px 105px; gap:8px; }
     .med-row-fields-2 { display:grid; grid-template-columns:1fr; gap:8px; margin-top:8px; }
 
     .field label { display:block; font-size:10px; letter-spacing:.07em; text-transform:uppercase; margin-bottom:4px; color:var(--muted); }
@@ -80,6 +80,12 @@
       outline:none; transition:box-shadow .15s; -webkit-appearance:none;
       background:rgba(255,255,255,.09); color:#fff;
     }
+    .field input[type="time"] {
+      -webkit-appearance:auto; appearance:auto;
+      font-size:13px; padding:.55rem .4rem; color-scheme:dark;
+    }
+    html.dark .field input[type="time"] { color-scheme:dark; }
+    html:not(.dark) .med-row:nth-child(even) .field input[type="time"] { color-scheme:light; }
     html.dark .field input { background:rgba(255,255,255,.07); color:var(--ink); }
     .field input::placeholder { color:rgba(255,255,255,.2); }
     html.dark .field input::placeholder { color:rgba(240,235,225,.25); }
@@ -139,7 +145,14 @@
     .card.done-card .streak-badge { background:rgba(0,0,0,.12); color:rgba(0,0,0,.55); }
 
     .card-name   { font-family:'Syne',sans-serif; font-size:24px; font-weight:800; line-height:1.1; margin-bottom:.2rem; }
-    .card-dosage { font-size:12px; opacity:.42; margin-bottom:1rem; }
+    .card-meta   { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:1rem; }
+    .card-dosage { font-size:12px; opacity:.42; }
+    .card-note   { font-size:11px; opacity:.35; font-style:italic; }
+    .card-time-badge { font-family:'Syne',sans-serif; font-size:10px; font-weight:700; padding:2px 8px; border-radius:20px; }
+    html:not(.dark) .card.dark  .card-time-badge { background:rgba(255,255,255,.12); color:rgba(255,255,255,.7); }
+    html:not(.dark) .card.light .card-time-badge { background:rgba(13,13,13,.08); color:rgba(13,13,13,.55); }
+    html.dark .card .card-time-badge { background:rgba(240,235,225,.1); color:rgba(240,235,225,.55); }
+    .card.done-card .card-time-badge { background:rgba(0,0,0,.12); color:rgba(0,0,0,.5); }
 
     /* DOTS */
     .dot-track { display:flex; gap:3px; flex-wrap:wrap; margin-bottom:.9rem; align-items:center; }
@@ -346,7 +359,6 @@
       </div>
       <button class="toggle" id="notifToggle" onclick="toggleNotif()"></button>
     </div>
-    <input type="time" class="time-input" id="notifTime" value="08:00" onchange="saveNotifTime()" />
   </div>
   <div class="section-label">البيانات</div>
   <div class="action-row">
@@ -417,7 +429,7 @@
     const data = load();
     document.getElementById('medRows').innerHTML = '';
     _uid = 0; rowCount = 0;
-    if (data && data.meds) data.meds.forEach(m => addMedRow(m.name, m.total, m.dosage));
+    if (data && data.meds) data.meds.forEach(m => addMedRow(m.name, m.total, m.dosage, m.note, m.time));
     if (rowCount === 0) addMedRow();
     showSetup();
   }
@@ -425,7 +437,7 @@
   /* ── setup rows ── */
   let rowCount = 0, _uid = 0;
 
-  function addMedRow(name, total, dosage) {
+  function addMedRow(name, total, dosage, note, time) {
     rowCount++; _uid++;
     const id  = 'row_' + _uid;
     const idx = rowCount;
@@ -442,10 +454,14 @@
           <input type="text" class="med-name" placeholder="مثال: أوميبرازول" maxlength="40" value="${esc(name||'')}" /></div>
         <div class="field"><label>الأيام</label>
           <input type="number" class="med-total" placeholder="30" min="1" max="9999" value="${total||''}" /></div>
+        <div class="field"><label>الوقت</label>
+          <input type="time" class="med-time" value="${time||''}" /></div>
       </div>
       <div class="med-row-fields-2">
         <div class="field"><label>الجرعة (اختياري)</label>
           <input type="text" class="med-dosage" placeholder="مثال: حبة واحدة صباحاً" maxlength="60" value="${esc(dosage||'')}" /></div>
+        <div class="field"><label>ملاحظة (اختياري)</label>
+          <input type="text" class="med-note" placeholder="مثال: بعد الأكل — الساعة 8 صباحاً" maxlength="80" value="${esc(note||'')}" /></div>
       </div>`;
     document.getElementById('medRows').appendChild(div);
   }
@@ -477,10 +493,12 @@
       const name   = rows[i].querySelector('.med-name').value.trim();
       const total  = parseInt(rows[i].querySelector('.med-total').value);
       const dosage = rows[i].querySelector('.med-dosage').value.trim();
+      const note   = rows[i].querySelector('.med-note').value.trim();
+      const time   = rows[i].querySelector('.med-time').value;
       if (!name)              { err.textContent = `أدخل اسم الدواء ${i+1}`; return; }
       if (!total || total < 1){ err.textContent = `أدخل عدد أيام الدواء ${i+1}`; return; }
       const prev = old.find(m => m.name === name);
-      meds.push({ name, total, dosage, days: prev ? prev.days : {} });
+      meds.push({ name, total, dosage, note, time, days: prev ? prev.days : {} });
     }
     err.textContent = '';
     save({ meds });
@@ -558,8 +576,13 @@
       card.id = 'card_' + idx;
       card.style.animationDelay = (idx * 0.04) + 's';
 
-      const badge    = streak > 0 ? `<span class="streak-badge">${streak} 🔥</span>` : '';
-      const dosageLn = med.dosage ? `<div class="card-dosage">${esc(med.dosage)}</div>` : '';
+      const timeBadge = med.time ? `<span class="card-time-badge">⏰ ${med.time}</span>` : '';
+      const badge     = [streak > 0 ? `<span class="streak-badge">${streak} 🔥</span>` : '', timeBadge].filter(Boolean).join(' ');
+      const metaParts = [
+        med.dosage ? `<span class="card-dosage">${esc(med.dosage)}</span>` : '',
+        med.note   ? `<span class="card-note">${esc(med.note)}</span>`     : '',
+      ].filter(Boolean);
+      const metaLn    = metaParts.length ? `<div class="card-meta">${metaParts.join('<span style="opacity:.2">·</span>')}</div>` : '';
 
       let actions = '';
       if (isDone) {
@@ -580,7 +603,7 @@
           ${badge}
         </div>
         <div class="card-name">${esc(med.name)}</div>
-        ${dosageLn}
+        ${metaLn}
         <div class="dot-track" id="dots_${idx}"></div>
         <div class="prog-wrap"><div class="prog-fill" style="width:${pct}%"></div></div>
         <div class="card-bottom">
@@ -674,18 +697,37 @@
       });
     }
 
-    // sync notif UI
-    const notifOn   = localStorage.getItem(NOTIF_KEY) === 'on';
-    const notifTime = localStorage.getItem(NTIME_KEY) || '08:00';
-    document.getElementById('notifToggle').classList.toggle('on', notifOn);
-    document.getElementById('notifTime').value = notifTime;
+    document.getElementById('notifToggle').classList.toggle('on', localStorage.getItem(NOTIF_KEY) === 'on');
     updateNotifSub();
   }
 
   /* ── notifications ── */
-  let _notifTimer = null;
+  let _notifTimers = [];
+  function clearAllNotifTimers() { _notifTimers.forEach(t => clearTimeout(t)); _notifTimers = []; }
+
   function initNotifSchedule() {
-    if (localStorage.getItem(NOTIF_KEY) === 'on') scheduleNotif();
+    if (localStorage.getItem(NOTIF_KEY) === 'on') scheduleAllNotifs();
+  }
+  function scheduleAllNotifs() {
+    clearAllNotifTimers();
+    const data = load(); if (!data || !data.meds) return;
+    data.meds.forEach(med => {
+      if (!med.time) return;
+      const [hh, mm] = med.time.split(':').map(Number);
+      const now  = new Date();
+      const fire = new Date(); fire.setHours(hh, mm, 0, 0);
+      if (fire <= now) fire.setDate(fire.getDate() + 1);
+      const t = setTimeout(() => { fireMedNotif(med.name); scheduleAllNotifs(); }, fire - now);
+      _notifTimers.push(t);
+    });
+  }
+  function fireMedNotif(medName) {
+    if (Notification.permission !== 'granted') return;
+    const data = load(); if (!data) return;
+    const today = todayKey();
+    const med = data.meds.find(m => m.name === medName);
+    if (!med || med.days[today] || Object.keys(med.days).filter(k=>med.days[k]).length >= med.total) return;
+    new Notification('دوائي 💊', { body: 'حان وقت: ' + medName });
   }
   function toggleNotif() {
     const toggle = document.getElementById('notifToggle');
@@ -696,7 +738,7 @@
         if (p === 'granted') {
           toggle.classList.add('on');
           localStorage.setItem(NOTIF_KEY, 'on');
-          scheduleNotif(); updateNotifSub();
+          scheduleAllNotifs(); updateNotifSub();
           toast('تم تفعيل التذكير ✓');
         } else {
           toast('لم يُسمح بالإشعارات');
@@ -705,40 +747,18 @@
     } else {
       toggle.classList.remove('on');
       localStorage.setItem(NOTIF_KEY, 'off');
-      if (_notifTimer) { clearTimeout(_notifTimer); _notifTimer = null; }
-      updateNotifSub(); toast('تم إيقاف التذكير');
+      clearAllNotifTimers(); updateNotifSub();
+      toast('تم إيقاف التذكير');
     }
-  }
-  function saveNotifTime() {
-    const t = document.getElementById('notifTime').value;
-    localStorage.setItem(NTIME_KEY, t);
-    if (localStorage.getItem(NOTIF_KEY) === 'on') {
-      if (_notifTimer) clearTimeout(_notifTimer);
-      scheduleNotif();
-    }
-    updateNotifSub(); toast('تم حفظ وقت التذكير');
   }
   function updateNotifSub() {
     const el = document.getElementById('notifSub'); if (!el) return;
-    const on   = localStorage.getItem(NOTIF_KEY) === 'on';
-    const time = localStorage.getItem(NTIME_KEY) || '08:00';
-    el.textContent = on ? `تذكير يومي في الساعة ${time}` : 'تلقّ إشعاراً يومياً لأخذ دوائك';
-  }
-  function scheduleNotif() {
-    const time = localStorage.getItem(NTIME_KEY) || '08:00';
-    const [hh, mm] = time.split(':').map(Number);
-    const now  = new Date();
-    const fire = new Date(); fire.setHours(hh, mm, 0, 0);
-    if (fire <= now) fire.setDate(fire.getDate() + 1);
-    _notifTimer = setTimeout(() => { fireNotif(); scheduleNotif(); }, fire - now);
-  }
-  function fireNotif() {
-    if (Notification.permission !== 'granted') return;
-    const data = load(); if (!data || !data.meds) return;
-    const today   = todayKey();
-    const pending = data.meds.filter(m => !m.days[today] && Object.keys(m.days).filter(k=>m.days[k]).length < m.total);
-    if (!pending.length) return;
-    new Notification('دوائي 💊', { body: 'لم تأخذ بعد: ' + pending.map(m => m.name).join('، ') });
+    const on = localStorage.getItem(NOTIF_KEY) === 'on';
+    const data = load();
+    const withTime = data && data.meds ? data.meds.filter(m => m.time).length : 0;
+    el.textContent = on
+      ? (withTime ? `تذكير فعّال لـ ${withTime} دواء حسب وقته` : 'فعّال — أضف وقتاً لكل دواء من الإعدادات')
+      : 'تلقّ إشعاراً عند حلول وقت كل دواء';
   }
 
   /* ── export / import ── */
