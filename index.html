@@ -473,7 +473,7 @@
     <div class="notif-row">
       <div>
         <div class="notif-title">تنظيف الأسنان</div>
-        <div class="notif-sub">إشعار عند الاستيقاظ وقبل النوم</div>
+        <div class="notif-sub" id="teethNotifSub">إشعار عند الاستيقاظ وقبل النوم</div>
       </div>
       <button class="toggle" id="teethNotifToggle" onclick="toggleTeethNotif()"></button>
     </div>
@@ -541,6 +541,13 @@
 
   /* ── init ── */
   function init() {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').then(() => {
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (localStorage.getItem(TNOTIF_KEY) === 'on') scheduleTeethNotifs();
+        });
+      }).catch(()=>{});
+    }
     initTheme();
     initNotifSchedule();
     initTeethNotifs();
@@ -841,6 +848,7 @@
     if (mi2) mi2.value = td.morningTime || '07:30';
     if (ei2) ei2.value = td.extraTime   || '13:00';
     if (vi2) vi2.value = td.eveningTime || '22:00';
+    updateTeethNotifSub();
   }
 
   /* ── notifications ── */
@@ -1217,9 +1225,28 @@
     clearTeethNotifTimers();
     if (Notification.permission !== 'granted') return;
     const teeth = loadTeeth();
-    _scheduleOneTeethNotif(teeth.morningTime || '07:30', 'morning');
-    _scheduleOneTeethNotif(teeth.extraTime   || '13:00', 'extra');
-    _scheduleOneTeethNotif(teeth.eveningTime || '22:00', 'evening');
+    const slots = [
+      { slot:'morning', time: teeth.morningTime||'07:30' },
+      { slot:'extra',   time: teeth.extraTime  ||'13:00' },
+      { slot:'evening', time: teeth.eveningTime||'22:00' },
+    ];
+    const jobs = slots.map(({ slot, time }) => {
+      const [hh,mm] = time.split(':').map(Number);
+      const fire = new Date(); fire.setHours(hh,mm,0,0);
+      if (fire <= new Date()) fire.setDate(fire.getDate()+1);
+      const body = slot==='morning' ? 'حان وقت تنظيف أسنانك الصباحي 🌅'
+                 : slot==='extra'   ? 'وقت التنظيف الإضافي لنقاط مضاعفة ⭐'
+                 : 'لا تنسَ تنظيف أسنانك قبل النوم 🌙';
+      return { at: fire.getTime(), title:'دوائي 🦷', body, tag:'teeth-'+slot };
+    });
+    // SW handles delivery even when tab is closed
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready
+        .then(reg => { if (reg.active) reg.active.postMessage({ type:'SCHEDULE', jobs }); })
+        .catch(()=>{});
+    }
+    // Main-thread fallback (works when tab is open)
+    slots.forEach(({ slot, time }) => _scheduleOneTeethNotif(time, slot));
   }
 
   function _scheduleOneTeethNotif(timeStr, slot) {
@@ -1239,23 +1266,47 @@
     _teethNotifTimers.push(t);
   }
 
+  function updateTeethNotifSub() {
+    const el = document.getElementById('teethNotifSub'); if (!el) return;
+    if (Notification.permission === 'denied') {
+      el.textContent = '🔒 محجوبة — اضغط أيقونة القفل في شريط العنوان ثم اختر إشعارات > السماح';
+      el.style.color = 'var(--accent2)';
+    } else if (localStorage.getItem(TNOTIF_KEY) === 'on') {
+      el.textContent = 'فعّال — تذكير عند كل وقت تنظيف';
+      el.style.color = '';
+    } else {
+      el.textContent = 'إشعار عند الاستيقاظ وقبل النوم';
+      el.style.color = '';
+    }
+  }
+
   function toggleTeethNotif() {
     const toggle = document.getElementById('teethNotifToggle');
     const isOn   = toggle.classList.contains('on');
     if (!isOn) {
       if (!('Notification' in window)) { toast('المتصفح لا يدعم الإشعارات'); return; }
+      if (Notification.permission === 'denied') {
+        updateTeethNotifSub();
+        toast('الإشعارات محجوبة — انظر التعليمات أدناه');
+        return;
+      }
       Notification.requestPermission().then(p => {
         if (p === 'granted') {
           toggle.classList.add('on');
           localStorage.setItem(TNOTIF_KEY, 'on');
           scheduleTeethNotifs();
+          updateTeethNotifSub();
           toast('تم تفعيل تذكير الأسنان ✓');
-        } else { toast('لم يُسمح بالإشعارات'); }
+        } else {
+          updateTeethNotifSub();
+          toast('لم يُسمح بالإشعارات');
+        }
       });
     } else {
       toggle.classList.remove('on');
       localStorage.setItem(TNOTIF_KEY, 'off');
       clearTeethNotifTimers();
+      updateTeethNotifSub();
       toast('تم إيقاف تذكير الأسنان');
     }
   }
