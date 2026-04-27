@@ -473,7 +473,7 @@
     <div class="notif-row">
       <div>
         <div class="notif-title">تنظيف الأسنان</div>
-        <div class="notif-sub" id="teethNotifSub">حدد وقت إشعار كل جلسة — الأزرار متاحة طول اليوم</div>
+        <div class="notif-sub" id="teethNotifSub">حدد متى تبدأ كل جلسة حسب جدولك اليومي</div>
       </div>
       <button class="toggle" id="teethNotifToggle" onclick="toggleTeethNotif()"></button>
     </div>
@@ -1165,25 +1165,34 @@
     const et = parse(teeth.extraTime   || '13:00');
     const vt = parse(teeth.eveningTime || '22:00');
     return {
-      morning: { start: mt - 30,  end: mt + 180 },
-      extra:   { start: et - 60,  end: et + 120 },
-      evening: { start: vt - 120, end: vt + 60  },
+      morning: { start: mt, end: et - 1  },
+      extra:   { start: et, end: vt - 1  },
+      evening: { start: vt, end: 1439    },
     };
   }
 
   function getSlotStatus(slot, teeth) {
-    return (teeth.sessions[todayKey()]||{})[slot] ? 'done' : 'open';
+    const nowM = new Date().getHours()*60 + new Date().getMinutes();
+    const win  = getTimeWindows(teeth)[slot];
+    const sess = (teeth.sessions[todayKey()])||{};
+    if (sess[slot])       return 'done';
+    if (nowM < win.start) return 'future';
+    if (nowM > win.end)   return 'past';
+    return 'open';
   }
 
   function renderBrushBtn(el, slot, teeth) {
     if (!el) return;
-    const done = getSlotStatus(slot, teeth) === 'done';
+    const status = getSlotStatus(slot, teeth);
+    const w    = getTimeWindows(teeth);
     const icon = slot === 'morning' ? '🌅' : slot === 'evening' ? '🌙' : '⭐';
     const lbl  = slot === 'morning' ? 'صباحي' : slot === 'evening' ? 'مسائي' : 'تنظيف إضافي';
     el.classList.remove('done','disabled');
     el.disabled = false;
-    if (done) { el.classList.add('done'); el.disabled = true; el.textContent = icon + ' تم ✓'; }
-    else      { el.textContent = icon + ' ' + lbl; }
+    if      (status === 'done')   { el.classList.add('done');     el.disabled = true; el.textContent = icon + ' تم ✓'; }
+    else if (status === 'future') { el.classList.add('disabled'); el.disabled = true; el.textContent = icon + ' ' + lbl + ' · ' + formatMins(w[slot].start); }
+    else if (status === 'past')   { el.classList.add('disabled'); el.disabled = true; el.textContent = icon + ' فات الوقت'; }
+    else                          { el.textContent = icon + ' ' + lbl; }
   }
 
   function saveTeethSettings() {
