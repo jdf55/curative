@@ -279,6 +279,77 @@
     @keyframes fadeIn  { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
     .pop      { animation:pop    .25s ease; }
     .fade-in  { animation:fadeIn .3s ease both; }
+
+    /* ── TEETH ── */
+    .tooth-card { border-radius:var(--radius); padding:1.75rem; background:var(--card-dark-bg); position:relative; overflow:hidden; transition:background .3s,box-shadow .4s; margin-bottom:10px; color:#fff; }
+    html.dark .tooth-card { color:var(--ink); }
+    .tooth-card.critical { box-shadow:0 0 0 2px #FF3B30,0 8px 28px rgba(255,59,48,.22); }
+
+    .tooth-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; }
+    .tooth-card-title  { font-family:'Syne',sans-serif; font-size:10px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; opacity:.4; }
+    .tooth-health-label { font-family:'Syne',sans-serif; font-size:11px; font-weight:700; opacity:.6; }
+
+    .tooth-svg-wrap { display:flex; justify-content:center; margin-bottom:.65rem; }
+    .tooth-svg { width:72px; height:auto; }
+
+    @keyframes toothBreathe { 0%,100%{transform:scale(1)} 50%{transform:scale(1.03)} }
+    @keyframes toothThrob   { 0%,100%{transform:scale(1);filter:drop-shadow(0 0 5px rgba(255,59,48,.35))} 50%{transform:scale(1.06);filter:drop-shadow(0 0 14px rgba(255,59,48,.75))} }
+    @keyframes toothSpark   { 0%{filter:brightness(1);transform:scale(1)} 28%{filter:brightness(2.6);transform:scale(1.1)} 100%{filter:brightness(1);transform:scale(1)} }
+    .tooth-svg.anim-breathe { animation:toothBreathe 3.5s ease-in-out infinite; }
+    .tooth-svg.anim-throb   { animation:toothThrob   1.3s ease-in-out infinite; }
+    .tooth-svg.anim-spark   { animation:toothSpark   .55s ease-out both; }
+
+    .tooth-score-center { display:flex; align-items:baseline; justify-content:center; gap:4px; margin-bottom:.2rem; }
+    .tooth-health-score { font-family:'Syne',sans-serif; font-size:42px; font-weight:800; line-height:1; color:var(--accent); }
+    .tooth-score-pct    { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:var(--accent); opacity:.55; }
+
+    .plaque-clock { text-align:center; font-size:12px; margin-bottom:1.1rem; opacity:.45; transition:color .3s; }
+    .plaque-clock.warning { opacity:1; color:#FF9500 !important; }
+    .plaque-clock.danger  { opacity:1; color:#FF3B30 !important; font-weight:700; font-family:'Syne',sans-serif; }
+
+    .tooth-hbar-wrap { height:3px; border-radius:2px; margin-bottom:1.25rem; background:rgba(255,255,255,.1); }
+    html.dark .tooth-hbar-wrap { background:rgba(240,235,225,.1); }
+    .tooth-hbar-fill { height:3px; border-radius:2px; transition:width .7s cubic-bezier(.4,0,.2,1),background .5s; }
+
+    .tooth-brush-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:1.1rem; }
+    .brush-btn { padding:.65rem; border:none; border-radius:12px; font-family:'Syne',sans-serif; font-size:12px; font-weight:700; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:6px; letter-spacing:.04em; background:rgba(255,255,255,.1); color:rgba(255,255,255,.55); }
+    html.dark .brush-btn { background:rgba(240,235,225,.08); color:rgba(240,235,225,.45); }
+    .brush-btn:active { transform:scale(.95); }
+    .brush-btn.done { background:var(--accent) !important; color:#000 !important; cursor:default; }
+    .brush-btn.done:active { transform:none; }
+    .brush-btn.disabled { opacity:.28; cursor:not-allowed; font-size:11px; letter-spacing:.02em; }
+    .brush-btn.disabled:active { transform:none; }
+    .brush-btn.extra-btn { grid-column:1/-1; }
+    html:not(.dark) .brush-btn.extra-btn       { background:rgba(255,215,0,.1);  color:rgba(255,215,0,.7); }
+    html.dark       .brush-btn.extra-btn       { background:rgba(255,215,0,.08); color:rgba(255,215,0,.6); }
+    .brush-btn.extra-btn.done { background:linear-gradient(135deg,#FFD700,#FFA500) !important; color:#000 !important; }
+    html:not(.dark) .tooth-dot.extra-done  { background:#FFD700; }
+    html:not(.dark) .tooth-dot.extra-empty { background:rgba(255,215,0,.14); }
+    html.dark       .tooth-dot.extra-done  { background:#FFD700; }
+    html.dark       .tooth-dot.extra-empty { background:rgba(255,215,0,.1); }
+
+    .tooth-history-dots { display:flex; gap:5px; flex-wrap:wrap; justify-content:center; margin-bottom:1.1rem; }
+    .tooth-day-pair  { display:flex; flex-direction:column; gap:2px; align-items:center; }
+    .tooth-dot       { width:5px; height:5px; border-radius:50%; transition:background .3s; }
+    html:not(.dark) .tooth-dot.done  { background:var(--accent); }
+    html:not(.dark) .tooth-dot.empty { background:rgba(255,255,255,.14); }
+    html:not(.dark) .tooth-dot.today { background:rgba(255,255,255,.22); box-shadow:0 0 0 2px var(--accent); }
+    html.dark .tooth-dot.done  { background:var(--accent); }
+    html.dark .tooth-dot.empty { background:rgba(240,235,225,.1); }
+    html.dark .tooth-dot.today { background:rgba(240,235,225,.2); box-shadow:0 0 0 2px var(--accent); }
+
+    .weekly-grade { display:flex; align-items:center; gap:.9rem; padding-top:1rem; border-top:1px solid rgba(255,255,255,.08); }
+    html.dark .weekly-grade { border-top-color:rgba(240,235,225,.07); }
+    .grade-circle { width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:19px; font-weight:800; flex-shrink:0; color:#000; }
+    .grade-a { background:var(--accent); }
+    .grade-b { background:#90EE90; }
+    .grade-c { background:#FFD700; }
+    .grade-d { background:#FF9500; }
+    .grade-f { background:#FF3B30; color:#fff; }
+    .grade-title { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; margin-bottom:3px; color:rgba(255,255,255,.8); }
+    html.dark .grade-title { color:rgba(240,235,225,.8); }
+    .grade-sub { font-size:12px; color:rgba(255,255,255,.42); }
+    html.dark .grade-sub { color:rgba(240,235,225,.4); }
   </style>
 </head>
 <body>
@@ -292,6 +363,7 @@
   <button class="add-med-btn" onclick="addMedRow()">+ أضف دواء</button>
   <button class="start-btn" onclick="startApp()">ابدأ التتبع ←</button>
   <div class="err-msg" id="errMsg"></div>
+  <a class="reset-link" style="margin-top:.25rem" onclick="skipMeds()">تخطّ — سأضيف الأدوية لاحقاً</a>
 </div>
 
 <!-- ══ HOME ══ -->
@@ -327,6 +399,42 @@
     </div>
   </div>
   <div class="cards-list" id="cardsList"></div>
+
+  <!-- ══ TEETH ══ -->
+  <div id="teethSection">
+    <div class="tooth-card" id="toothCard">
+      <div class="tooth-card-header">
+        <div class="tooth-card-title">أسنانك</div>
+        <div class="tooth-health-label" id="toothHealthLabel">جارٍ التحميل</div>
+      </div>
+      <div class="tooth-svg-wrap">
+        <svg viewBox="0 0 60 66" class="tooth-svg" id="toothSvg">
+          <rect x="3" y="2" width="54" height="38" rx="13" class="tooth-fill" fill="#F0EBE0"/>
+          <rect x="7" y="32" width="20" height="30" rx="9" class="tooth-fill" fill="#F0EBE0"/>
+          <rect x="33" y="32" width="20" height="30" rx="9" class="tooth-fill" fill="#F0EBE0"/>
+          <rect x="22" y="32" width="16" height="12" class="tooth-fill" fill="#F0EBE0"/>
+          <ellipse cx="19" cy="16" rx="7" ry="11" fill="rgba(255,255,255,0.22)" transform="rotate(-12,19,16)"/>
+          <circle id="cavitySpot" cx="38" cy="22" r="0" fill="#2a0800" opacity="0.9"/>
+        </svg>
+      </div>
+      <div class="tooth-score-center">
+        <span class="tooth-health-score" id="toothHealthScore">—</span>
+        <span class="tooth-score-pct">%</span>
+      </div>
+      <div class="plaque-clock" id="plaqueClock">...</div>
+      <div class="tooth-hbar-wrap">
+        <div class="tooth-hbar-fill" id="toothHbarFill" style="width:0%"></div>
+      </div>
+      <div class="tooth-brush-row">
+        <button class="brush-btn" id="btnMorning" onclick="brush('morning')">🌅 صباحي</button>
+        <button class="brush-btn" id="btnEvening" onclick="brush('evening')">🌙 مسائي</button>
+        <button class="brush-btn extra-btn" id="btnExtra" onclick="brush('extra')">⭐ تنظيف إضافي — نقاط مضاعفة</button>
+      </div>
+      <div class="tooth-history-dots" id="toothHistory"></div>
+      <div class="weekly-grade" id="weeklyGrade"></div>
+    </div>
+  </div>
+
   <div class="streak-box">
     <div class="streak-circle"><span class="streak-num" id="streakNum">0</span></div>
     <div>
@@ -358,6 +466,30 @@
         <div class="notif-sub" id="notifSub">تلقّ إشعاراً يومياً لأخذ دوائك</div>
       </div>
       <button class="toggle" id="notifToggle" onclick="toggleNotif()"></button>
+    </div>
+  </div>
+  <div class="section-label">تذكير الأسنان</div>
+  <div class="notif-card">
+    <div class="notif-row">
+      <div>
+        <div class="notif-title">تنظيف الأسنان</div>
+        <div class="notif-sub">إشعار عند الاستيقاظ وقبل النوم</div>
+      </div>
+      <button class="toggle" id="teethNotifToggle" onclick="toggleTeethNotif()"></button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:.75rem">
+      <div>
+        <div style="font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">🌅 الصباح</div>
+        <input type="time" class="time-input" id="morningTimeInput" onchange="saveTeethSettings()" />
+      </div>
+      <div>
+        <div style="font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">⭐ الإضافي</div>
+        <input type="time" class="time-input" id="extraTimeInput" onchange="saveTeethSettings()" />
+      </div>
+      <div>
+        <div style="font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">🌙 المساء</div>
+        <input type="time" class="time-input" id="eveningTimeInput" onchange="saveTeethSettings()" />
+      </div>
     </div>
   </div>
   <div class="section-label">البيانات</div>
@@ -411,8 +543,9 @@
   function init() {
     initTheme();
     initNotifSchedule();
+    initTeethNotifs();
     const data = load();
-    if (data && data.meds && data.meds.length > 0) showHome();
+    if (data && data.meds) showHome();
     else { addMedRow(); showSetup(); }
   }
 
@@ -423,7 +556,7 @@
     window.scrollTo(0, 0);
   }
   function showSetup() { showScreen('screenSetup'); }
-  function showHome()  { showScreen('screenHome'); setDate(); render(); }
+  function showHome()  { showScreen('screenHome'); setDate(); render(); renderTeeth(); startTeethClock(); }
   function showStats() { showScreen('screenStats'); renderStats(); }
   function goSetup() {
     const data = load();
@@ -699,6 +832,15 @@
 
     document.getElementById('notifToggle').classList.toggle('on', localStorage.getItem(NOTIF_KEY) === 'on');
     updateNotifSub();
+    const tnt = document.getElementById('teethNotifToggle');
+    if (tnt) tnt.classList.toggle('on', localStorage.getItem(TNOTIF_KEY) === 'on');
+    const td = loadTeeth();
+    const mi2 = document.getElementById('morningTimeInput');
+    const ei2 = document.getElementById('extraTimeInput');
+    const vi2 = document.getElementById('eveningTimeInput');
+    if (mi2) mi2.value = td.morningTime || '07:30';
+    if (ei2) ei2.value = td.extraTime   || '13:00';
+    if (vi2) vi2.value = td.eveningTime || '22:00';
   }
 
   /* ── notifications ── */
@@ -796,9 +938,15 @@
   }
 
   /* ── reset ── */
+  function skipMeds() {
+    save({ meds: [] });
+    showHome();
+  }
+
   function resetAll() {
     if (!confirm('هل تريد مسح كل شيء والبدء من الصفر؟')) return;
     localStorage.removeItem(KEY);
+    localStorage.removeItem(TEETH_KEY);
     document.getElementById('medRows').innerHTML = '';
     rowCount = 0; _uid = 0;
     addMedRow(); showSetup();
@@ -811,6 +959,305 @@
     const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
     document.getElementById('dateDisplay').innerHTML =
       `<strong>${days[now.getDay()]}</strong>${now.getDate()} ${months[now.getMonth()]}`;
+  }
+
+  /* ── TEETH ── */
+  const TEETH_KEY = 'dawai_teeth_v1';
+
+  function loadTeeth() {
+    try { return JSON.parse(localStorage.getItem(TEETH_KEY)) || { sessions:{}, lastBrush:null }; }
+    catch(e) { return { sessions:{}, lastBrush:null }; }
+  }
+  function saveTeeth(d) { try { localStorage.setItem(TEETH_KEY, JSON.stringify(d)); } catch(e){} }
+
+  function calcToothHealth(teeth) {
+    if (!teeth.lastBrush) return 35;
+    return Math.max(0, Math.round(100 - (Date.now() - teeth.lastBrush) / 3600000 * 2));
+  }
+
+  function toothFillColor(h) {
+    if (h >= 80) return '#F0EBE0';
+    if (h >= 60) return '#E8D595';
+    if (h >= 40) return '#C8A030';
+    if (h >= 20) return '#8B5E18';
+    return '#5A3008';
+  }
+
+  function healthBarColor(h) {
+    if (h >= 70) return '#C8FF00';
+    if (h >= 50) return '#FFD700';
+    if (h >= 30) return '#FF9500';
+    return '#FF3B30';
+  }
+
+  function healthLabel(h, allThree) {
+    if (allThree)  return '⭐ يوم مثالي — ثلاث مرات!';
+    if (h >= 80) return 'أسنانك نظيفة ✓';
+    if (h >= 60) return 'تراكم خفيف';
+    if (h >= 40) return 'تحتاج تنظيفاً';
+    if (h >= 20) return '⚠ جراثيم تتراكم';
+    return '🚨 خطر: نخر مبكر';
+  }
+
+  function timeSince(ts) {
+    if (!ts) return 'لم تنظّف بعد';
+    const m = Math.floor((Date.now() - ts) / 60000);
+    if (m < 1)  return 'الآن';
+    if (m < 60) return `منذ ${m} دقيقة`;
+    const h = Math.floor(m / 60), rm = m % 60;
+    if (h < 24) return rm ? `منذ ${h} س ${rm} د` : `منذ ${h} ساعة`;
+    return `منذ ${Math.floor(h / 24)} يوم`;
+  }
+
+  function weeklyGrade(sessions) {
+    let done = 0, perfect = 0;
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i);
+      const s = sessions[d.toISOString().slice(0,10)] || {};
+      if (s.morning) done++;
+      if (s.evening) done++;
+      if (s.morning && s.evening && s.extra) perfect++;
+    }
+    const p = done / 14 * 100;
+    const perfTxt = perfect ? ` · ${perfect} أيام مثالية ⭐` : '';
+    if (p >= 90) return { g: perfect >= 5 ? '⭐' : 'A', cls:'grade-a', s: perfect >= 5 ? `${perfect} أيام مثالية هذا الأسبوع!` : 'أسنانك ممتازة — واصل هكذا!' + perfTxt };
+    if (p >= 70) return { g:'B', cls:'grade-b', s:'جيد جداً، تحتاج انتظاماً أكثر' + perfTxt };
+    if (p >= 50) return { g:'C', cls:'grade-c', s:'يمكنك التحسين بجهد بسيط' + perfTxt };
+    if (p >= 30) return { g:'D', cls:'grade-d', s:'أسنانك في خطر حقيقي' };
+    return { g:'F', cls:'grade-f', s:'احجز موعداً عند الطبيب الآن!' };
+  }
+
+  function brush(slot) {
+    const teeth = loadTeeth();
+    if (getSlotStatus(slot, teeth) !== 'open') return;
+    const today = todayKey();
+    if (!teeth.sessions[today]) teeth.sessions[today] = {};
+    if (teeth.sessions[today][slot]) return;
+    teeth.sessions[today][slot] = true;
+    teeth.lastBrush = Date.now();
+    saveTeeth(teeth);
+    const svg = document.getElementById('toothSvg');
+    if (svg) {
+      svg.classList.remove('anim-breathe','anim-throb','anim-spark');
+      void svg.offsetWidth;
+      svg.classList.add('anim-spark');
+      setTimeout(renderTeeth, 650);
+    } else { renderTeeth(); }
+    toast('تم التسجيل ✓');
+  }
+
+  function renderTeeth() {
+    const teeth  = loadTeeth();
+    const today  = todayKey();
+    const health = calcToothHealth(teeth);
+    const sess   = teeth.sessions[today] || {};
+
+    document.querySelectorAll('.tooth-fill').forEach(el => el.setAttribute('fill', toothFillColor(health)));
+
+    const cav = document.getElementById('cavitySpot');
+    if (cav) cav.setAttribute('r', health < 40 ? Math.round((40 - health) / 40 * 7) : 0);
+
+    const svg = document.getElementById('toothSvg');
+    if (svg && !svg.classList.contains('anim-spark')) {
+      svg.classList.remove('anim-breathe','anim-throb');
+      if (health >= 70)     svg.classList.add('anim-breathe');
+      else if (health < 30) svg.classList.add('anim-throb');
+    }
+
+    const allThree = !!(sess.morning && sess.evening && sess.extra);
+    const lbl = document.getElementById('toothHealthLabel');
+    if (lbl) lbl.textContent = healthLabel(health, allThree);
+
+    const score = document.getElementById('toothHealthScore');
+    if (score) score.textContent = health;
+
+    const bar = document.getElementById('toothHbarFill');
+    if (bar) { bar.style.width = health + '%'; bar.style.background = healthBarColor(health); }
+
+    const clk = document.getElementById('plaqueClock');
+    if (clk) {
+      clk.textContent = timeSince(teeth.lastBrush);
+      clk.className = 'plaque-clock';
+      if (teeth.lastBrush) {
+        const hrs = (Date.now() - teeth.lastBrush) / 3600000;
+        if (hrs > 20)      clk.classList.add('danger');
+        else if (hrs > 12) clk.classList.add('warning');
+      }
+    }
+
+    renderBrushBtn(document.getElementById('btnMorning'), 'morning', teeth);
+    renderBrushBtn(document.getElementById('btnEvening'), 'evening', teeth);
+    renderBrushBtn(document.getElementById('btnExtra'),   'extra',   teeth);
+
+    const hist = document.getElementById('toothHistory');
+    if (hist) {
+      hist.innerHTML = '';
+      for (let i = 13; i >= 0; i--) {
+        const d = new Date(); d.setDate(d.getDate() - i);
+        const k = d.toISOString().slice(0,10);
+        const s = teeth.sessions[k] || {};
+        const isToday = k === today;
+        const pair = document.createElement('div');
+        pair.className = 'tooth-day-pair';
+        ['morning','extra','evening'].forEach(slot => {
+          const dot = document.createElement('div');
+          if (slot === 'extra') {
+            dot.className = 'tooth-dot ' + (s[slot] ? 'extra-done' : 'extra-empty');
+          } else {
+            dot.className = 'tooth-dot ' + (s[slot] ? 'done' : isToday ? 'today' : 'empty');
+          }
+          pair.appendChild(dot);
+        });
+        hist.appendChild(pair);
+      }
+    }
+
+    const gradeEl = document.getElementById('weeklyGrade');
+    if (gradeEl) {
+      const g = weeklyGrade(teeth.sessions);
+      gradeEl.innerHTML = `
+        <div class="grade-circle ${g.cls}">${g.g}</div>
+        <div>
+          <div class="grade-title">تقرير الأسبوع</div>
+          <div class="grade-sub">${g.s}</div>
+        </div>`;
+    }
+
+    const section   = document.getElementById('teethSection');
+    const cardsList = document.getElementById('cardsList');
+    if (section && cardsList) {
+      if (health < 30) {
+        if (cardsList.previousElementSibling !== section)
+          cardsList.parentNode.insertBefore(section, cardsList);
+      } else {
+        if (cardsList.nextElementSibling !== section)
+          cardsList.insertAdjacentElement('afterend', section);
+      }
+    }
+
+    const card = document.getElementById('toothCard');
+    if (card) card.classList.toggle('critical', health < 30);
+  }
+
+  let _teethTimer;
+  function startTeethClock() {
+    clearInterval(_teethTimer);
+    _teethTimer = setInterval(renderTeeth, 60000);
+  }
+
+  /* ── teeth time windows ── */
+  function formatMins(m) {
+    const hh = Math.floor((m % 1440) / 60), mm = m % 60;
+    return String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
+  }
+
+  function getTimeWindows(teeth) {
+    const parse = t => { const [h,m] = (t||'00:00').split(':').map(Number); return h*60+m; };
+    const mt = parse(teeth.morningTime || '07:30');
+    const et = parse(teeth.extraTime   || '13:00');
+    const vt = parse(teeth.eveningTime || '22:00');
+    return {
+      morning: { start: mt - 30,  end: mt + 180 },
+      extra:   { start: et - 60,  end: et + 120 },
+      evening: { start: vt - 120, end: vt + 60  },
+    };
+  }
+
+  function getSlotStatus(slot, teeth) {
+    const now = new Date();
+    const nowM = now.getHours()*60 + now.getMinutes();
+    const w = getTimeWindows(teeth);
+    const win = w[slot];
+    const sess = (teeth.sessions[todayKey()])||{};
+    if (sess[slot])        return 'done';
+    if (nowM < win.start)  return 'future';
+    if (nowM > win.end)    return 'past';
+    return 'open';
+  }
+
+  function renderBrushBtn(el, slot, teeth) {
+    if (!el) return;
+    const status = getSlotStatus(slot, teeth);
+    const w    = getTimeWindows(teeth);
+    const icon = slot === 'morning' ? '🌅' : slot === 'evening' ? '🌙' : '⭐';
+    const lbl  = slot === 'morning' ? 'صباحي' : slot === 'evening' ? 'مسائي' : 'تنظيف إضافي';
+    el.classList.remove('done','disabled');
+    el.disabled = false;
+    if      (status === 'done')   { el.classList.add('done');     el.disabled = true; el.textContent = icon + ' تم ✓'; }
+    else if (status === 'future') { el.classList.add('disabled'); el.disabled = true; el.textContent = icon + ' ' + lbl + '  ' + formatMins(w[slot].start); }
+    else if (status === 'past')   { el.classList.add('disabled'); el.disabled = true; el.textContent = icon + ' فات الوقت'; }
+    else                          { el.textContent = icon + ' ' + lbl; }
+  }
+
+  function saveTeethSettings() {
+    const teeth = loadTeeth();
+    const mi = document.getElementById('morningTimeInput');
+    const ei = document.getElementById('extraTimeInput');
+    const vi = document.getElementById('eveningTimeInput');
+    if (mi && mi.value) teeth.morningTime = mi.value;
+    if (ei && ei.value) teeth.extraTime   = ei.value;
+    if (vi && vi.value) teeth.eveningTime = vi.value;
+    saveTeeth(teeth);
+    renderTeeth();
+    if (localStorage.getItem(TNOTIF_KEY) === 'on') scheduleTeethNotifs();
+    toast('تم الحفظ ✓');
+  }
+
+  /* ── teeth notifications ── */
+  const TNOTIF_KEY = 'dawai_teeth_notif';
+  let _teethNotifTimers = [];
+
+  function clearTeethNotifTimers() { _teethNotifTimers.forEach(t => clearTimeout(t)); _teethNotifTimers = []; }
+
+  function initTeethNotifs() {
+    if (localStorage.getItem(TNOTIF_KEY) === 'on') scheduleTeethNotifs();
+  }
+
+  function scheduleTeethNotifs() {
+    clearTeethNotifTimers();
+    if (Notification.permission !== 'granted') return;
+    const teeth = loadTeeth();
+    _scheduleOneTeethNotif(teeth.morningTime || '07:30', 'morning');
+    _scheduleOneTeethNotif(teeth.extraTime   || '13:00', 'extra');
+    _scheduleOneTeethNotif(teeth.eveningTime || '22:00', 'evening');
+  }
+
+  function _scheduleOneTeethNotif(timeStr, slot) {
+    const [hh,mm] = timeStr.split(':').map(Number);
+    const now  = new Date();
+    const fire = new Date(); fire.setHours(hh, mm, 0, 0);
+    if (fire <= now) fire.setDate(fire.getDate() + 1);
+    const body = slot === 'morning' ? 'حان وقت تنظيف أسنانك الصباحي 🌅'
+               : slot === 'extra'   ? 'وقت التنظيف الإضافي لنقاط مضاعفة ⭐'
+               : 'لا تنسَ تنظيف أسنانك قبل النوم 🌙';
+    const t = setTimeout(() => {
+      const td = loadTeeth();
+      if (!(td.sessions[todayKey()]||{})[slot])
+        new Notification('دوائي 🦷', { body });
+      _scheduleOneTeethNotif(timeStr, slot);
+    }, fire - now);
+    _teethNotifTimers.push(t);
+  }
+
+  function toggleTeethNotif() {
+    const toggle = document.getElementById('teethNotifToggle');
+    const isOn   = toggle.classList.contains('on');
+    if (!isOn) {
+      if (!('Notification' in window)) { toast('المتصفح لا يدعم الإشعارات'); return; }
+      Notification.requestPermission().then(p => {
+        if (p === 'granted') {
+          toggle.classList.add('on');
+          localStorage.setItem(TNOTIF_KEY, 'on');
+          scheduleTeethNotifs();
+          toast('تم تفعيل تذكير الأسنان ✓');
+        } else { toast('لم يُسمح بالإشعارات'); }
+      });
+    } else {
+      toggle.classList.remove('on');
+      localStorage.setItem(TNOTIF_KEY, 'off');
+      clearTeethNotifTimers();
+      toast('تم إيقاف تذكير الأسنان');
+    }
   }
 
   init();
