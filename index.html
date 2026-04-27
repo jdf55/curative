@@ -473,7 +473,7 @@
     <div class="notif-row">
       <div>
         <div class="notif-title">تنظيف الأسنان</div>
-        <div class="notif-sub" id="teethNotifSub">إشعار عند الاستيقاظ وقبل النوم</div>
+        <div class="notif-sub" id="teethNotifSub">حدد وقت إشعار كل جلسة — الأزرار متاحة طول اليوم</div>
       </div>
       <button class="toggle" id="teethNotifToggle" onclick="toggleTeethNotif()"></button>
     </div>
@@ -1172,29 +1172,18 @@
   }
 
   function getSlotStatus(slot, teeth) {
-    const now = new Date();
-    const nowM = now.getHours()*60 + now.getMinutes();
-    const w = getTimeWindows(teeth);
-    const win = w[slot];
-    const sess = (teeth.sessions[todayKey()])||{};
-    if (sess[slot])        return 'done';
-    if (nowM < win.start)  return 'future';
-    if (nowM > win.end)    return 'past';
-    return 'open';
+    return (teeth.sessions[todayKey()]||{})[slot] ? 'done' : 'open';
   }
 
   function renderBrushBtn(el, slot, teeth) {
     if (!el) return;
-    const status = getSlotStatus(slot, teeth);
-    const w    = getTimeWindows(teeth);
+    const done = getSlotStatus(slot, teeth) === 'done';
     const icon = slot === 'morning' ? '🌅' : slot === 'evening' ? '🌙' : '⭐';
     const lbl  = slot === 'morning' ? 'صباحي' : slot === 'evening' ? 'مسائي' : 'تنظيف إضافي';
     el.classList.remove('done','disabled');
     el.disabled = false;
-    if      (status === 'done')   { el.classList.add('done');     el.disabled = true; el.textContent = icon + ' تم ✓'; }
-    else if (status === 'future') { el.classList.add('disabled'); el.disabled = true; el.textContent = icon + ' ' + lbl + '  ' + formatMins(w[slot].start); }
-    else if (status === 'past')   { el.classList.add('disabled'); el.disabled = true; el.textContent = icon + ' فات الوقت'; }
-    else                          { el.textContent = icon + ' ' + lbl; }
+    if (done) { el.classList.add('done'); el.disabled = true; el.textContent = icon + ' تم ✓'; }
+    else      { el.textContent = icon + ' ' + lbl; }
   }
 
   function saveTeethSettings() {
